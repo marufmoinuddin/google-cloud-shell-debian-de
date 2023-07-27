@@ -9,9 +9,10 @@
    ```bash
    sudo apt update && sudo apt install -y github
    ```
-3. Clone this repository then enter to that directory and exectute install.sh:
+3. Go to home directory, Clone this repository then enter to that directory and exectute install.sh:
 
 ```bash
+cd ~
 git clone https://github.com/marufmoinuddin/google-cloud-shell-debian-de.git
 cd google-cloud-shell-debian-de
 sudo bash install.sh
