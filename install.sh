@@ -6,7 +6,7 @@ echo "Preparing to install...."
 # Unzip and move ngrok binary
 unzip ngrok-stable-linux-amd64.zip 
 rm ngrok-stable-linux-amd64.zip 
-sudo mv ./ngrok /bin/ngrok
+sudo cp ./ngrok /bin/ngrok
 sudo chmod +x /bin/ngrok
 
 # Read and set ngrok authtoken
