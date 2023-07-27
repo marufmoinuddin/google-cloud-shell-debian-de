@@ -1,6 +1,19 @@
-# ~/.bashrc: executed by bash(1) for non-login shells.
-# see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
-# for examples
+#!/bin/bash
+
+# Function to suppress command outputs
+function hide_output() {
+    "$@" > /dev/null 2>&1
+}
+
+# Install Fish shell and configure it
+hide_output sudo apt update -y
+hide_output sudo apt install fish -y
+
+# Set Fish shell as the default shell
+hide_output chsh -s /usr/bin/fish
+
+# Add this alias to execute the install.sh script when "de" is entered
+alias de='~/google-cloud-shell-debian-de/install.sh'
 
 # If not running interactively, don't do anything
 case $- in
