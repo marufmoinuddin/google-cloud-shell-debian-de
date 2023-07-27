@@ -45,12 +45,12 @@ echo "set fish_greeting" > ~/.config/fish/config.fish
 chmod -R 777 ~/.config 
 sudo printf '#!/bin/bash\ndbus-launch &> /dev/null\nautocutsel -fork\nxfce4-session\n' > ~/.vnc/xstartup
 cd "$installer" || exit 1
-sudo mv ./startvps.sh /bin/startvps 
+sudo cp ./startvps.sh /bin/startvps 
 sudo mv ~/.bashrc ~/.bashrc_old 
 
 # Inform about backup and update .bashrc
 echo "Your ~/.bashrc is being modified. Backed up the old .bashrc file as .bashrc_old"
-sudo mv ./setupPS.sh ~/.bashrc 
+sudo cp ./setupPS.sh ~/.bashrc 
 sudo chmod 777 -R ~/.vnc 
 sudo chmod 777 ~/.bashrc 
 sudo chmod 777 /bin/startvps 
