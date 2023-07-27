@@ -60,6 +60,8 @@ while IFS= read -r line; do
     nohup sudo service "$line" start &> /dev/null 2> /dev/null &
 done < <(printf '%s\n' "$khanhall")
 clear
+echo "You can use novnc server in browser to view your Desktop. Just press web preview (on top right) and go to 8080 port. Or use the ip and put it to your VNC viewer"
+websockify -D --web=/usr/share/novnc/ --cert=$HOME/novnc.pem 8080 localhost:5900
 printf "\nYour IP Here: "
 curl --silent --show-error http://127.0.0.1:4040/api/tunnels | sed -nE 's/.*public_url":"tcp:..([^"]*).*/\1/p'
 export PS1='\[\e]0;\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
