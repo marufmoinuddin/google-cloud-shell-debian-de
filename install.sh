@@ -13,7 +13,7 @@ sudo sh -c 'echo "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/packages.micr
 sudo apt update -y > /dev/null 2>&1
 sudo apt install code wget software-properties-common apt-transport-https ufw fish apache2 php xfce4 xarchiver firefox-esr mesa-utils xfce4-goodies pv nmap nano apt-utils dialog terminator autocutsel dbus-x11 dbus neofetch perl p7zip unzip zip curl tar git python3 python3-pip net-tools openssl tigervnc-standalone-server tigervnc-xorg-extension novnc python3-websockify -y
 export installer="$(pwd)"
-cd ~ 2> /dev/null
+cd ~/ 2> /dev/null
 export HOME="$(pwd)"
 export DISPLAY=":0"
 cd $HOME 2> /dev/null
