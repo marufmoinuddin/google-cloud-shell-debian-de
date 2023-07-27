@@ -19,7 +19,7 @@ echo "You are about to be asked to enter information for making a https certific
 What you are about to enter is what is called a Distinguished Name or a DN.
 There are quite a few fields but you can leave some blank
 For some fields there will be a default value,
-You can enter '.', the field will be left blank."
+You can just press enter, the field will be left blank. And it will still proceed"
 openssl req -x509 -nodes -newkey rsa:3072 -keyout novnc.pem -out novnc.pem -days 3650
 export DISPLAY=":0"
 cd $HOME 2> /dev/null
