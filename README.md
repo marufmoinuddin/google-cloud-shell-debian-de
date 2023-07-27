@@ -7,7 +7,7 @@
 1. Open [Google Cloud Shell](https://shell.cloud.google.com/?show=terminal)
 2. Install git:
    ```bash
-   sudo apt update && sudo apt install -y github
+   sudo apt update && sudo apt install -y git
    ```
 3. Go to home directory, Clone this repository then enter to that directory and exectute install.sh:
 
