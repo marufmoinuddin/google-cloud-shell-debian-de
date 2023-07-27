@@ -4,8 +4,8 @@
 echo "Preparing to install...."
 
 # Unzip and move ngrok binary
-unzip ngrok-stable-linux-amd64.zip > /dev/null 2>&1
-rm ngrok-stable-linux-amd64.zip 2> /dev/null
+unzip ngrok-stable-linux-amd64.zip > /dev/null
+rm ngrok-stable-linux-amd64.zip > /dev/null
 sudo mv ./ngrok /bin/ngrok
 sudo chmod +x /bin/ngrok
 
@@ -23,58 +23,40 @@ sudo install -o root -g root -m 644 packages.microsoft.gpg /etc/apt/trusted.gpg.
 sudo sh -c 'echo "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/packages.microsoft.gpg] https://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list'
 
 # Update package list and install necessary packages
-sudo apt update -y > /dev/null 2>&1
-sudo apt install openssl code wget software-properties-common apt-transport-https ufw fish apache2 php xfce4 xarchiver firefox-esr mesa-utils xfce4-goodies pv nmap nano apt-utils dialog terminator autocutsel dbus-x11 dbus neofetch perl p7zip unzip zip curl tar git python3 python3-pip net-tools openssl tigervnc-standalone-server tigervnc-xorg-extension novnc python3-websockify -y
+sudo apt update > /dev/null
+echo "Installing the required packages..."
+sudo apt install openssl code wget software-properties-common apt-transport-https ufw xfce4 xarchiver firefox-esr mesa-utils xfce4-goodies pv nmap nano apt-utils dialog terminator autocutsel dbus-x11 dbus neofetch perl p7zip unzip zip curl tar git python3 python3-pip net-tools openssl tigervnc-standalone-server tigervnc-xorg-extension novnc python3-websockify -y > /dev/null
 
 # Set some environment variables
 export installer="$(pwd)"
 cd ~/ || exit 1
 export HOME="$(pwd)"
-
-# Explain the upcoming SSL certificate creation
-echo "You are about to be asked to enter information for making an https certificate."
-echo "What you are about to enter is what is called a Distinguished Name or a DN."
-echo "There are quite a few fields but you can leave some blank."
-echo "For some fields, there will be a default value."
-echo "You can just press enter, and the field will be left blank. And it will still proceed."
-
-# Generate SSL certificate
-openssl req -x509 -nodes -newkey rsa:3072 -keyout novnc.pem -out novnc.pem -days 3650
 export DISPLAY=":0"
 cd "$HOME" || exit 1
-sudo mkdir ~/.vnc 2> /dev/null
+sudo mkdir ~/.vnc > /dev/null
 
-# Set up Fish shell configuration
-if [ ! -d ~/.config ] 2> /dev/null; then
-  sudo mkdir ~/.config 2> /dev/null
-fi
-if [ ! -d ~/.config/fish ] 2> /dev/null; then
-  sudo mkdir ~/.config/fish 2> /dev/null
-fi
-echo "set fish_greeting" > ~/.config/fish/config.fish
-chmod -R 777 ~/.config 2> /dev/null
+# Set up some configuration
+if [ ! -d ~/.config ] ; then
+  sudo mkdir ~/.config > /dev/null
+chmod -R 777 ~/.config > /dev/null
 sudo printf '#!/bin/bash\ndbus-launch &> /dev/null\nautocutsel -fork\nxfce4-session\n' > ~/.vnc/xstartup
 cd "$installer" || exit 1
-sudo mv ./startvps.sh /bin/startvps 2> /dev/null
-sudo mv ~/.bashrc ~/.bashrc_old 2> /dev/null
+sudo mv ./startvps.sh /bin/startvps > /dev/null
+
 
 # Inform about backup and update .bashrc
-echo "Your ~/.bashrc is being modified. Backed up the old .bashrc file as .bashrc_old"
-sudo mv ./setupPS.sh ~/.bashrc 2> /dev/null
-sudo mv ./apache2.conf /etc/apache2/apache2.conf 2> /dev/null
-sudo chmod 777 -R ~/.vnc 2> /dev/null
-sudo chmod 777 ~/.bashrc 2> /dev/null
-sudo chmod 777 /bin/startvps 2> /dev/null
-sudo chmod 777 /etc/apache2/apache2.conf 2> /dev/null
-sudo apt update -y > /dev/null 2>&1
-sudo apt autoremove -y
+sudo chmod 777 -R ~/.vnc > /dev/null
+sudo chmod 777 ~/.bashrc > /dev/null
+sudo chmod 777 /bin/startvps > /dev/null
+sudo apt update > /dev/null
+sudo apt autoremove -y > /dev/null
 
 # Check and install Windows-10-Dark-master theme
-if [ ! -d /usr/share/themes/Windows-10-Dark-master ] 2> /dev/null; then
+if [ ! -d /usr/share/themes/Windows-10-Dark-master ] ; then
   cd /usr/share/themes/ || exit 1
-  sudo cp "$installer"/app/Windows-10-Dark-master.zip ./
-  unzip -qq Windows-10-Dark-master.zip 2> /dev/null
-  rm -f Windows-10-Dark-master.zip 2> /dev/null
+  sudo cp "$installer"/app/Windows-10-Dark-master.zip ./ > /dev/null
+  unzip -qq Windows-10-Dark-master.zip > /dev/null
+  rm -f Windows-10-Dark-master.zip > /dev/null
 fi
 cd "$HOME" || exit 1
 clear
