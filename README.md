@@ -1,22 +1,27 @@
 # Debian_VPS_Google_Shell
- - Run Debian 11 on Google Cloud Shell
+ - Run Debian with xfce DE on Google Cloud Shell
 
 # How to install?
  - Tutorial: [Not-available]
 
 1. Open [Google Cloud Shell](https://shell.cloud.google.com/?show=terminal)
-
-2. Copy this line and paste it on Google Cloud Shell
+2. Install git:
+   ```bash
+   sudo apt update && sudo apt install -y github
+   ```
+3. Clone this repository then enter to that directory and exectute install.sh:
 
 ```bash
-wget -O install.sh "https://raw.githubusercontent.com/marufmoinuddin/google-cloud-shell-debian-de/main/install.sh" 2> /dev/null; sudo bash install.sh
+git clone https://github.com/marufmoinuddin/google-cloud-shell-debian-de.git
+cd google-cloud-shell-debian-de
+sudo bash install.sh
 ```
 
-3. Get authtoken ngrok [Here](https://dashboard.ngrok.com/get-started/your-authtoken) [Required ngrok account]
+4. Get authtoken ngrok [Here](https://dashboard.ngrok.com/get-started/your-authtoken) [Required ngrok account]
 
-4. Insert your authtoken ngrok
+5. Insert your authtoken ngrok
 
-5. Wait for install!
+6. Wait for install!
 
 # How to start?
 
