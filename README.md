@@ -1,4 +1,4 @@
-# Debian_VPS_Google_Shell
+# Debian Xfce Desktop on Google Shell
  - Run Debian with xfce DE on Google Cloud Shell
 
 # How to install?
