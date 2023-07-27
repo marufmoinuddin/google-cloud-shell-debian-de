@@ -92,6 +92,7 @@ fi
 #alias la='ls -A'
 #alias l='ls -CF'
 
+
 # Alias definitions.
 # You may want to put all your additions into a separate file like
 # ~/.bash_aliases, instead of adding them here directly.
@@ -100,6 +101,9 @@ fi
 if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
 fi
+
+# Add this alias to execute the install.sh script when "de" is entered
+alias de='~/google-cloud-shell-debian-de/install.sh'
 
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
