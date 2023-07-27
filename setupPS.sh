@@ -1,5 +1,4 @@
 #!/bin/bash
-sudo apt install fish -y > /dev/null 2>&1
 # Function to suppress command outputs
 function hide_output() {
     "$@" > /dev/null 2>&1
