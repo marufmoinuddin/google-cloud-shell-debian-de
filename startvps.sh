@@ -67,8 +67,18 @@ sudo /sbin/sysctl -w net.ipv4.tcp_keepalive_time=10000 net.ipv4.tcp_keepalive_in
 # Start all available services
 sall="$(service --status-all | grep '\-' | awk '{print $4}')"
 while IFS= read -r line; do
-    expect -c "spawn sudo service \"$line\" restart; expect \"*password*\"; send \"your_password_here\r\"; interact" &>/dev/null &
+    expect <<EOF
+        spawn sudo service "$line" restart
+        expect {
+            "Proceed with operation (y/n)?" {
+                send "y\r"
+                exp_continue
+            }
+            eof
+        }
+EOF
 done < <(printf '%s\n' "$sall")
+
 
 # Get the public URL for the ngrok tunnel
 printf "\n\nYour IP Here: "
