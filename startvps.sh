@@ -61,15 +61,15 @@ websockify -D --web=/usr/share/novnc/ --cert="$HOME/novnc.pem" 8080 localhost:59
 sudo /sbin/sysctl -w net.ipv4.tcp_keepalive_time=10000 net.ipv4.tcp_keepalive_intvl=5000 net.ipv4.tcp_keepalive_probes=100
 
 # Start all available services
-sall="$(service --status-all 2> /dev/null | grep '\-' | awk '{print $4}')"
+sall="$(service --status-all | grep '\-' | awk '{print $4}')"
 while IFS= read -r line; do
     nohup sudo service "$line" start &> /dev/null &
 done < <(printf '%s\n' "$sall")
 
-clear
+
 
 # Get the public URL for the ngrok tunnel
-printf "\nYour IP Here: "
+printf "\n\nYour IP Here: "
 curl --silent --show-error http://127.0.0.1:4040/api/tunnels | sed -nE 's/.*public_url":"tcp:..([^"]*).*/\1/p'
 
 # Display information for accessing the VNC server
