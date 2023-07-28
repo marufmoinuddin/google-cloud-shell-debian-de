@@ -9,10 +9,6 @@ rm ngrok-stable-linux-amd64.zip
 sudo cp ./ngrok /bin/ngrok
 sudo chmod +x /bin/ngrok
 
-# Read and set ngrok authtoken
-read -p "INSERT authtoken ngrok: " key
-ngrok authtoken "$key"
-
 # Inform about the following steps
 echo ""
 echo "Cloud Shell already runs on Debian. Just installing the DE (Xfce amd64) and some apps...."
