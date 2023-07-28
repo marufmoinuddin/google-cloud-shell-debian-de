@@ -37,7 +37,7 @@ fi
 if [ ! -d ~/.config/fish ] ; then
   sudo mkdir ~/.config/fish 
 fi
-echo "set fish_greeting" > ~/.config/fish/config.fish
+
 chmod -R 777 ~/.config 
 sudo printf '#!/bin/bash\ndbus-launch &> /dev/null\nautocutsel -fork\nxfce4-session\n' > ~/.vnc/xstartup
 cd "$installer" || exit 1
