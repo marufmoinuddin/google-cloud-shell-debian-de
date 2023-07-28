@@ -18,9 +18,15 @@ wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > pa
 sudo install -o root -g root -m 644 packages.microsoft.gpg /etc/apt/trusted.gpg.d/ 
 sudo sh -c 'echo "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/packages.microsoft.gpg] https://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list'
 
+# Add Linux Mint repository to sources list
+echo "deb [trusted=yes] http://packages.linuxmint.com elsie main upstream import backport" >> /etc/apt/sources.list
+
+# Import the GPG key for the Linux Mint repository
+apt-key adv --recv-keys --keyserver keyserver.ubuntu.com A6616109451BBBF2
+
 # Update package list and install necessary packages
 sudo apt update -y 
-sudo apt install papirus-icon-theme expect code software-properties-common apt-transport-https ufw xfce4 xarchiver firefox-esr mesa-utils xfce4-goodies pv nmap nano apt-utils dialog terminator autocutsel dbus-x11 dbus neofetch perl p7zip unzip zip curl tar python3 python3-pip net-tools openssl tigervnc-standalone-server tigervnc-xorg-extension novnc python3-websockify -y
+sudo apt install papirus-icon-theme expect mintinstall code software-properties-common apt-transport-https ufw xfce4 xarchiver firefox-esr mesa-utils xfce4-goodies pv nmap nano apt-utils dialog terminator autocutsel dbus-x11 dbus neofetch perl p7zip unzip zip curl tar python3 python3-pip net-tools openssl tigervnc-standalone-server tigervnc-xorg-extension novnc python3-websockify -y
 
 # Set some environment variables
 cd .. || exit 1
