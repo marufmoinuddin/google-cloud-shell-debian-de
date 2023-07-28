@@ -26,40 +26,40 @@ sudo apt install papirus-icon-theme code software-properties-common apt-transpor
 cd .. || exit 1
 export HOME="$(pwd)"
 export DISPLAY=":0"
-cd $HOME || exit 1
-sudo rm -rf $HOME/.vnc 
-sudo mkdir $HOME/.vnc 
+cd "$HOME" || exit 1
+sudo rm -rf "$HOME/.vnc"
+sudo mkdir "$HOME/.vnc"
 
-#Preparing VNC's desktop environment execution
-if [ ! -d $HOME/.config ] ; then
-  sudo mkdir $HOME/.config 
+# Preparing VNC's desktop environment execution
+if [ ! -d "$HOME/.config" ]; then
+  sudo mkdir "$HOME/.config"
 fi
-chmod -R 777 $HOME/.config 
-sudo printf '#!/bin/bash\ndbus-launch &> /dev/null\nautocutsel -fork\nxfce4-session\n' > $HOME/.vnc/xstartup
-cd $HOME/google-cloud-shell-debian-de || exit 1
+chmod -R 777 "$HOME/.config"
+sudo printf '#!/bin/bash\ndbus-launch &> /dev/null\nautocutsel -fork\nxfce4-session\n' > "$HOME/.vnc/xstartup"
+cd "$HOME/google-cloud-shell-debian-de" || exit 1
 sudo cp ./startvps.sh /bin/startvps 
 
-#Setting permissions and cleaning up
-sudo chmod 777 -R $HOME/.vnc 
-sudo chmod 777 $HOME/.bashrc 
+# Setting permissions and cleaning up
+sudo chmod 777 -R "$HOME/.vnc"
+sudo chmod 777 "$HOME/.bashrc"
 sudo chmod 777 /bin/startvps 
 sudo apt update -y 
 sudo apt autoremove -y 
 
 # Check and install Windows-10-Dark-master theme
-if [ ! -d /usr/share/themes/Windows-10-Dark-master ] ; then
+if [ ! -d /usr/share/themes/Windows-10-Dark-master ]; then
   cd /usr/share/themes/ || exit 1
-  sudo cp $HOME/google-cloud-shell-debian-de/app/Windows-10-Dark-master.zip ./ 
+  sudo cp "$HOME/google-cloud-shell-debian-de/app/Windows-10-Dark-master.zip" ./ 
   unzip -qq Windows-10-Dark-master.zip 
   rm -f Windows-10-Dark-master.zip 
 fi
-cd $HOME || exit 1
+cd "$HOME" || exit 1
 
 # Inform about backup and update .bashrc
-sudo mv $HOME/.bashrc $HOME/.bashrc_old 
+sudo mv "$HOME/.bashrc" "$HOME/.bashrc_old"
 echo "Your $HOME/.bashrc is being modified. Backed up the old .bashrc file as .bashrc_old"
-sudo cp $HOME/google-cloud-shell-debian-de/setupPS.sh $HOME/.bashrc 
-sudo chmod 777 $HOME/.bashrc 
+sudo cp "$HOME/google-cloud-shell-debian-de/setupPS.sh" "$HOME/.bashrc"
+sudo chmod 777 "$HOME/.bashrc"
 
 # Installation completed message
 printf "\n\n\nInstallation completed!\n Run: startvps to start VNC Server!\n\n"
