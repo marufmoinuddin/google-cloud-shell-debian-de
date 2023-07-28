@@ -38,14 +38,14 @@ fi
 chmod -R 777 $HOME/.config 
 sudo printf '#!/bin/bash\ndbus-launch &> /dev/null\nautocutsel -fork\nxfce4-session\n' > $HOME/.vnc/xstartup
 cd "$installer" || exit 1
-sudo cp ./startvps.sh /bin/startvps 
+sudo cp $installer/startvps.sh /bin/startvps 
 
 # Inform about backup and update .bashrc
 sudo mv $HOME/.bashrc $HOME/.bashrc_old 
 echo "Your $HOME/.bashrc is being modified. Backed up the old .bashrc file as .bashrc_old"
-sudo cp ./setupPS.sh $HOME/.bashrc 
+sudo cp $installer/setupPS.sh $HOME/.bashrc 
 
-#Setting cermissions and cleaning up
+#Setting permissions and cleaning up
 sudo chmod 777 -R $HOME/.vnc 
 sudo chmod 777 $HOME/.bashrc 
 sudo chmod 777 /bin/startvps 
