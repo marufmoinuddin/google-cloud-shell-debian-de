@@ -52,6 +52,33 @@ sudo chmod 777 /bin/startvps
 sudo apt update -y 
 sudo apt autoremove -y 
 
+# Define the backup source directory
+backup_dir="$HOME/google-cloud-shell-debian-de/xfce4_backup"
+
+# Function to restore files and directories using cp
+restore_files() {
+    source_path="$1"
+    if [ -d "$source_path" ]; then
+        if [ ! -d "$HOME/.config/xfce4/$(basename $source_path)" ]; then
+            cp -r "$backup_dir/$(basename $source_path)" "$HOME/.config/xfce4"
+        else
+            echo "Skipped: $source_path already exists."
+        fi
+    fi
+}
+
+# Restore all XFCE4 settings and configurations
+restore_files "$HOME/.config/xfce4"
+restore_files "$HOME/.config/xfce4-session"
+restore_files "$HOME/.config/xfce4-panel"
+restore_files "$HOME/.config/xfce4-desktop"
+restore_files "$HOME/.config/xfce4/xfconf"
+restore_files "$HOME/.config/Thunar"
+
+# Restore themes and icons (optional)
+restore_files "$HOME/.themes"
+restore_files "$HOME/.icons"
+
 # Check and install Windows-10-Dark-master theme
 if [ ! -d /usr/share/themes/Windows-10-Dark-master ]; then
   cd /usr/share/themes/ || exit 1
