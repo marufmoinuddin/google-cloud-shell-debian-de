@@ -67,6 +67,13 @@ fi
 cd "$HOME" || exit 1
 clear
 
+# Add Papirus icon theme and set as default
+if [ ! -d ~/.icons/Papirus ]; then
+  sudo apt update
+  sudo apt install papirus-icon-theme -y
+fi
+xfconf-query -c xsettings -p /Net/IconThemeName -s "Papirus"
+
 # Installation completed message
 printf "\n\n\n - Installation completed!\n Run: [startvps] to start VNC Server!\n\n"
 exit 0
