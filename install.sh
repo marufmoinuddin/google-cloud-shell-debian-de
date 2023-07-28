@@ -28,27 +28,25 @@ cd ~/ || exit 1
 export HOME="$(pwd)"
 export DISPLAY=":0"
 cd "$HOME" || exit 1
-sudo mkdir ~/.vnc 
+sudo mkdir $HOME/.vnc 
 
-# Set up Fish shell configuration
-if [ ! -d ~/.config ] ; then
-  sudo mkdir ~/.config 
+#Preparing VNC's desktop environment execution
+if [ ! -d $HOME/.config ] ; then
+  sudo mkdir $HOME/.config 
 fi
-if [ ! -d ~/.config/fish ] ; then
-  sudo mkdir ~/.config/fish 
-fi
-
-chmod -R 777 ~/.config 
-sudo printf '#!/bin/bash\ndbus-launch &> /dev/null\nautocutsel -fork\nxfce4-session\n' > ~/.vnc/xstartup
+chmod -R 777 $HOME/.config 
+sudo printf '#!/bin/bash\ndbus-launch &> /dev/null\nautocutsel -fork\nxfce4-session\n' > $HOME/.vnc/xstartup
 cd "$installer" || exit 1
 sudo cp ./startvps.sh /bin/startvps 
-sudo mv ~/.bashrc ~/.bashrc_old 
 
 # Inform about backup and update .bashrc
-echo "Your ~/.bashrc is being modified. Backed up the old .bashrc file as .bashrc_old"
-sudo cp ./setupPS.sh ~/.bashrc 
-sudo chmod 777 -R ~/.vnc 
-sudo chmod 777 ~/.bashrc 
+sudo mv $HOME/.bashrc $HOME/.bashrc_old 
+echo "Your $HOME/.bashrc is being modified. Backed up the old .bashrc file as .bashrc_old"
+sudo cp ./setupPS.sh $HOME/.bashrc 
+
+#Setting cermissions and cleaning up
+sudo chmod 777 -R $HOME/.vnc 
+sudo chmod 777 $HOME/.bashrc 
 sudo chmod 777 /bin/startvps 
 sudo apt update -y 
 sudo apt autoremove -y 
