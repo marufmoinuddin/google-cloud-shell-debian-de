@@ -63,10 +63,8 @@ sudo /sbin/sysctl -w net.ipv4.tcp_keepalive_time=10000 net.ipv4.tcp_keepalive_in
 # Start all available services
 sall="$(service --status-all | grep '\-' | awk '{print $4}')"
 while IFS= read -r line; do
-    nohup sudo service "$line" start &> /dev/null &
+    nohup sudo service "$line" restart </dev/null &>/dev/null &
 done < <(printf '%s\n' "$sall")
-
-
 
 # Get the public URL for the ngrok tunnel
 printf "\n\nYour IP Here: "
