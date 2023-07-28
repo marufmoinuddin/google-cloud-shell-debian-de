@@ -18,7 +18,7 @@ cd google-cloud-shell-debian-de
 sudo bash install.sh
 ```
 
-4. Get authtoken ngrok [Here](https://dashboard.ngrok.com/get-started/your-authtoken) [Required ngrok account]
+4. (Optional) Get authtoken ngrok [Here](https://dashboard.ngrok.com/get-started/your-authtoken) . Or You can use port 8080 to visit the desktop.
 
 5. Insert your authtoken ngrok
 
@@ -27,11 +27,11 @@ sudo bash install.sh
 # How to start?
 
 1. Use this command:
-
+8080
 ```bash
 startvps
 ```
 
 2. Wait a moment, you will get the IP
-3. Use VNC Viewer to connect to that IP! Enjoy
+3. Use VNC Viewer to connect to that IP! Or go to port 8080. Enjoy
  
