@@ -28,7 +28,8 @@ cd ~/ || exit 1
 export HOME="$(pwd)"
 export DISPLAY=":0"
 cd "$HOME" || exit 1
-sudo mkdir $HOME/.vnc 
+rm -f $HOME/.vnc 
+mkdir $HOME/.vnc 
 
 #Preparing VNC's desktop environment execution
 if [ ! -d $HOME/.config ] ; then
