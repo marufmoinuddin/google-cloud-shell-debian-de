@@ -27,7 +27,6 @@ sudo bash install.sh
 # How to start?
 
 1. Use this command:
-8080
 ```bash
 startvps
 ```
