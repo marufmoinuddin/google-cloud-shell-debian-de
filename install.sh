@@ -68,5 +68,5 @@ cd "$HOME" || exit 1
 clear
 
 # Installation completed message
-printf "\n\n\n - Installation completed!\n Run: [startvps] to start VNC Server!\n\n"
+printf "\n\n\n - Installation completed!\n Run: startvps to start VNC Server!\n\n"
 exit 0
