@@ -65,11 +65,10 @@ clear
 printf "\nYour IP Here: "
 curl --silent --show-error http://127.0.0.1:4040/api/tunnels | sed -nE 's/.*public_url":"tcp:..([^"]*).*/\1/p'
 
-
 # Display information for accessing the VNC server
-echo "You can also use novnc server in the browser to view your Desktop."
-echo "Just press **Web Preview** (on the top right) and go to port 8080 and then press the vnc.html link."
-echo "Or use the IP and put it into your VNC viewer."
+echo -e "You can also use ${light_cyan}novnc server${reset} in the browser to view your Desktop."
+echo -e "Just press ${light_cyan}Web Preview${reset} (on the top right) and go to port 8080 and then press the vnc.html link."
+echo -e "Or use the IP and put it into your VNC viewer."
 
 # Set the prompt with the default format
 export PS1='\[\e]0;\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
