@@ -1,7 +1,6 @@
 # ~/.bashrc: executed by bash(1) for non-login shells.
 # see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
 # for examples
-sudo apt install -y fish > /dev/null 2>&1 
 # If not running interactively, don't do anything
 case $- in
     *i*) ;;
@@ -111,6 +110,17 @@ if ! shopt -oq posix; then
     . /etc/bash_completion
   fi
 fi
+
+# Message about "de" command
+echo "Type 'de' and press Enter to go to the desktop environment."
+
+# Alias for the "de" command
+de() {
+  cd ~ && rm -rf google-cloud-shell-debian-de
+  git clone https://github.com/marufmoinuddin/google-cloud-shell-debian-de.git
+  cd google-cloud-shell-debian-de
+  sudo bash install.sh
+}
+
 source /google/devshell/bashrc.google
 export PS1='\[\e]0;\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
-/usr/bin/fish
