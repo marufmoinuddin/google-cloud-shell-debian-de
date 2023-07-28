@@ -20,35 +20,28 @@ sudo sh -c 'echo "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/packages.micr
 
 # Update package list and install necessary packages
 sudo apt update -y 
-sudo apt install papirus-icon-theme code software-properties-common apt-transport-https ufw xfce4 xarchiver firefox-esr mesa-utils xfce4-goodies pv nmap nano apt-utils dialog terminator autocutsel dbus-x11 dbus neofetch perl p7zip unzip zip curl tar python3 python3-pip net-tools openssl tigervnc-standalone-server tigervnc-xorg-extension novnc python3-websockify -y
+sudo apt install papirus-icon-theme code software-properties-common apt-transport-https ufw xfce4 xarchiver firefox-esr mesa-utils xfce4-goodies pv nmap nano apt-utils dialog terminator autocutsel dbus-x11 dbus neofetch perl p7zip unzip zip curl tar python3 python3-pip net-tools tigervnc-standalone-server tigervnc-xorg-extension novnc python3-websockify -y
 
 # Set some environment variables
 export installer="$(pwd)"
 cd ~/ || exit 1
+export HOME="$(pwd)"
 export DISPLAY=":0"
-rm -f ~/.vnc 
-mkdir ~/.vnc 
+cd "$HOME" || exit 1
 
-#Preparing VNC's desktop environment execution
-if [ ! -d ~/.config ] ; then
-  sudo mkdir ~/.config 
-fi
-chmod -R 777 ~/.config 
-sudo cat << EOF > ~/.vnc/xstartup && chmod +x ~/.vnc/xstartup
-#!/bin/bash
-dbus-launch &> /dev/null
-autocutsel -fork
-xfce4-session
-EOF
+#Creating VNC configs
+sudo rm $HOME/.vnc
+mkdir $HOME/.vnc
+sudo printf '#!/bin/bash\ndbus-launch &> /dev/null\nautocutsel -fork\nxfce4-session\n' > $HOME/.vnc/xstartup
 
 # Inform about backup and update .bashrc
-sudo mv ~/.bashrc ~/.bashrc_old 
-echo "Your ~/.bashrc is being modified. Backed up the old .bashrc file as .bashrc_old"
-sudo cp ./setupPS.sh ~/.bashrc 
+sudo mv $HOME/.bashrc $HOME/.bashrc_old 
+echo "Your $HOME/.bashrc is being modified. Backed up the old .bashrc file as .bashrc_old"
+sudo cp ./setupPS.sh $HOME/.bashrc 
 
-#Setting cermissions and cleaning up
-sudo chmod 777 -R ~/.vnc 
-sudo chmod 777 ~/.bashrc 
+#Setting permissions and cleaning up
+sudo chmod 777 -R $HOME/.vnc 
+sudo chmod 777 $HOME/.bashrc 
 sudo apt update -y 
 sudo apt autoremove -y 
 
@@ -59,7 +52,7 @@ if [ ! -d /usr/share/themes/Windows-10-Dark-master ] ; then
   unzip -qq Windows-10-Dark-master.zip 
   rm -f Windows-10-Dark-master.zip 
 fi
-cd ~ || exit 1
+cd "$HOME" || exit 1
 clear
 #modified
 # Define color variables
@@ -110,7 +103,7 @@ sudo rm -rf /tmp/* 2> /dev/null
 vncserver :0
 
 # Start websockify for VNC access via web
-websockify -D --web=/usr/share/novnc/ --cert="~/novnc.pem" 8080 localhost:5900
+websockify -D --web=/usr/share/novnc/ --cert="$HOME/novnc.pem" 8080 localhost:5900
 
 # Configure TCP keepalive settings
 sudo /sbin/sysctl -w net.ipv4.tcp_keepalive_time=10000 net.ipv4.tcp_keepalive_intvl=5000 net.ipv4.tcp_keepalive_probes=100
@@ -121,13 +114,12 @@ while IFS= read -r line; do
     nohup sudo service "$line" start &> /dev/null &
 done < <(printf '%s\n' "$sall")
 
-clear
-
 # Get the public URL for the ngrok tunnel
 printf "\nYour IP Here: "
 curl --silent --show-error http://127.0.0.1:4040/api/tunnels | sed -nE 's/.*public_url":"tcp:..([^"]*).*/\1/p'
 
 # Display information for accessing the VNC server
+echo "\nNote:"
 echo "You can also use novnc server in the browser to view your Desktop."
 echo "Just press **Web Preview** (on the top right) and go to port 8080 and then press the vnc.html link."
 echo "Or use the IP and put it into your VNC viewer."
