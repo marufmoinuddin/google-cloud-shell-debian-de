@@ -34,7 +34,12 @@ if [ ! -d ~/.config ] ; then
   sudo mkdir ~/.config 
 fi
 chmod -R 777 ~/.config 
-sudo printf '#!/bin/bash\ndbus-launch &> /dev/null\nautocutsel -fork\nxfce4-session\n' > ~/.vnc/xstartup
+sudo cat << EOF > ~/.vnc/xstartup && chmod +x ~/.vnc/xstartup
+#!/bin/bash
+dbus-launch &> /dev/null
+autocutsel -fork
+xfce4-session
+EOF
 
 # Inform about backup and update .bashrc
 sudo mv ~/.bashrc ~/.bashrc_old 
@@ -54,7 +59,7 @@ if [ ! -d /usr/share/themes/Windows-10-Dark-master ] ; then
   unzip -qq Windows-10-Dark-master.zip 
   rm -f Windows-10-Dark-master.zip 
 fi
-cd "~" || exit 1
+cd ~ || exit 1
 clear
 #modified
 # Define color variables
