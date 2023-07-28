@@ -19,6 +19,13 @@ export DISPLAY=":0"
 sudo killall -q ngrok
 sudo killall -q websockify
 
+# Stop the xfce4-session if it's running
+if pgrep xfce4-session >/dev/null; then
+    echo "Stopping xfce4-session..."
+    pkill xfce4-session
+    sleep 2
+fi
+
 # Select the region for ngrok
 while [[ -z $server ]]; do
     printf "${blue}Select your region:\n${yellow} 1. United States (Ohio)\n 2. Europe (Frankfurt)\n 3. Asia/Pacific (Singapore)\n 4. Australia (Sydney)\n 5. South America (Sao Paulo)\n 6. Japan (Tokyo)\n 7. India (Mumbai)\n 8. Exit\n\n${green}"
