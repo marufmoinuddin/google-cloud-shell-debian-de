@@ -23,7 +23,7 @@ sudo apt update -y
 sudo apt install papirus-icon-theme code software-properties-common apt-transport-https ufw xfce4 xarchiver firefox-esr mesa-utils xfce4-goodies pv nmap nano apt-utils dialog terminator autocutsel dbus-x11 dbus neofetch perl p7zip unzip zip curl tar python3 python3-pip net-tools openssl tigervnc-standalone-server tigervnc-xorg-extension novnc python3-websockify -y
 
 # Set some environment variables
-cd ~/ || exit 1
+cd .. || exit 1
 export HOME="$(pwd)"
 export DISPLAY=":0"
 cd $HOME || exit 1
