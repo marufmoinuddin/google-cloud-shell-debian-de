@@ -28,6 +28,7 @@ cd ~/ || exit 1
 export HOME="$(pwd)"
 export DISPLAY=":0"
 cd "$HOME" || exit 1
+sudo rm $HOME/.vnc 
 sudo mkdir $HOME/.vnc 
 
 #Preparing VNC's desktop environment execution
