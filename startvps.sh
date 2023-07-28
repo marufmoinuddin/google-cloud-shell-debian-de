@@ -49,7 +49,7 @@ read -p "Now, insert authtoken ngrok: " key
 sudo ngrok authtoken "$key"
 
 # Start ngrok and VNC server
-nohup sudo ngrok tcp --region "$regions" 127.0.0.1:5900 &> /dev/null
+nohup sudo ngrok tcp --region "$regions" 127.0.0.1:5900 &
 if pgrep Xvnc >/dev/null; then
     echo "Stopping VNC server..."
     sudo killall Xvnc
@@ -67,7 +67,7 @@ sudo /sbin/sysctl -w net.ipv4.tcp_keepalive_time=10000 net.ipv4.tcp_keepalive_in
 # Start all available services
 sall="$(service --status-all | grep '\-' | awk '{print $4}')"
 while IFS= read -r line; do
-    nohup sudo service "$line" restart </dev/null &>/dev/null &
+    yes | nohup sudo service "$line" restart </dev/null &>/dev/null &
 done < <(printf '%s\n' "$sall")
 
 # Get the public URL for the ngrok tunnel
