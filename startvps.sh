@@ -42,8 +42,8 @@ read -p "Now, insert authtoken ngrok: " key
 sudo ngrok authtoken "$key"
 
 # Start ngrok and VNC server
-nohup sudo ngrok tcp --region "$regions" 127.0.0.1:5900 &> /dev/null &
-vncserver -kill :0 &> /dev/null
+nohup sudo ngrok tcp --region "$regions" 127.0.0.1:5900 
+vncserver -kill :0
 sudo rm -rf /tmp/* 2> /dev/null
 vncserver :0
 
