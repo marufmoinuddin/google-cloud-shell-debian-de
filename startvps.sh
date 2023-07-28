@@ -50,7 +50,7 @@ sudo ngrok authtoken "$key"
 
 # Start ngrok and VNC server
 nohup sudo ngrok tcp --region "$regions" 127.0.0.1:5900 &> /dev/null
-vncserver -kill :0
+vncserver -kill :0 &> /dev/null 2> /dev/null
 sudo rm -rf /tmp/* 2> /dev/null
 vncserver :0
 
