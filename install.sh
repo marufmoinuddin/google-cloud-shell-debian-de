@@ -25,27 +25,25 @@ sudo apt install papirus-icon-theme code software-properties-common apt-transpor
 # Set some environment variables
 export installer="$(pwd)"
 cd ~/ || exit 1
-export HOME="$(pwd)"
 export DISPLAY=":0"
-cd "$HOME" || exit 1
-rm -f $HOME/.vnc 
-mkdir $HOME/.vnc 
+rm -f ~/.vnc 
+mkdir ~/.vnc 
 
 #Preparing VNC's desktop environment execution
-if [ ! -d $HOME/.config ] ; then
-  sudo mkdir $HOME/.config 
+if [ ! -d ~/.config ] ; then
+  sudo mkdir ~/.config 
 fi
-chmod -R 777 $HOME/.config 
-sudo printf '#!/bin/bash\ndbus-launch &> /dev/null\nautocutsel -fork\nxfce4-session\n' > $HOME/.vnc/xstartup
+chmod -R 777 ~/.config 
+sudo printf '#!/bin/bash\ndbus-launch &> /dev/null\nautocutsel -fork\nxfce4-session\n' > ~/.vnc/xstartup
 
 # Inform about backup and update .bashrc
-sudo mv $HOME/.bashrc $HOME/.bashrc_old 
-echo "Your $HOME/.bashrc is being modified. Backed up the old .bashrc file as .bashrc_old"
-sudo cp ./setupPS.sh $HOME/.bashrc 
+sudo mv ~/.bashrc ~/.bashrc_old 
+echo "Your ~/.bashrc is being modified. Backed up the old .bashrc file as .bashrc_old"
+sudo cp ./setupPS.sh ~/.bashrc 
 
 #Setting cermissions and cleaning up
-sudo chmod 777 -R $HOME/.vnc 
-sudo chmod 777 $HOME/.bashrc 
+sudo chmod 777 -R ~/.vnc 
+sudo chmod 777 ~/.bashrc 
 sudo apt update -y 
 sudo apt autoremove -y 
 
@@ -56,7 +54,7 @@ if [ ! -d /usr/share/themes/Windows-10-Dark-master ] ; then
   unzip -qq Windows-10-Dark-master.zip 
   rm -f Windows-10-Dark-master.zip 
 fi
-cd "$HOME" || exit 1
+cd "~" || exit 1
 clear
 #modified
 # Define color variables
@@ -107,7 +105,7 @@ sudo rm -rf /tmp/* 2> /dev/null
 vncserver :0
 
 # Start websockify for VNC access via web
-websockify -D --web=/usr/share/novnc/ --cert="$HOME/novnc.pem" 8080 localhost:5900
+websockify -D --web=/usr/share/novnc/ --cert="~/novnc.pem" 8080 localhost:5900
 
 # Configure TCP keepalive settings
 sudo /sbin/sysctl -w net.ipv4.tcp_keepalive_time=10000 net.ipv4.tcp_keepalive_intvl=5000 net.ipv4.tcp_keepalive_probes=100
