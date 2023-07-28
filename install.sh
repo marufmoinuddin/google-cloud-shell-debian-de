@@ -23,11 +23,10 @@ sudo apt update -y
 sudo apt install papirus-icon-theme code software-properties-common apt-transport-https ufw xfce4 xarchiver firefox-esr mesa-utils xfce4-goodies pv nmap nano apt-utils dialog terminator autocutsel dbus-x11 dbus neofetch perl p7zip unzip zip curl tar python3 python3-pip net-tools openssl tigervnc-standalone-server tigervnc-xorg-extension novnc python3-websockify -y
 
 # Set some environment variables
-export installer="$(pwd)"
 cd ~/ || exit 1
 export HOME="$(pwd)"
 export DISPLAY=":0"
-cd "$HOME" || exit 1
+cd $HOME || exit 1
 sudo rm $HOME/.vnc 
 sudo mkdir $HOME/.vnc 
 
@@ -37,13 +36,8 @@ if [ ! -d $HOME/.config ] ; then
 fi
 chmod -R 777 $HOME/.config 
 sudo printf '#!/bin/bash\ndbus-launch &> /dev/null\nautocutsel -fork\nxfce4-session\n' > $HOME/.vnc/xstartup
-cd "$installer" || exit 1
-sudo cp $installer/startvps.sh /bin/startvps 
-
-# Inform about backup and update .bashrc
-sudo mv $HOME/.bashrc $HOME/.bashrc_old 
-echo "Your $HOME/.bashrc is being modified. Backed up the old .bashrc file as .bashrc_old"
-sudo cp $installer/setupPS.sh $HOME/.bashrc 
+cd $HOME/google-cloud-shell-debian-de || exit 1
+sudo cp ./startvps.sh /bin/startvps 
 
 #Setting permissions and cleaning up
 sudo chmod 777 -R $HOME/.vnc 
@@ -55,13 +49,18 @@ sudo apt autoremove -y
 # Check and install Windows-10-Dark-master theme
 if [ ! -d /usr/share/themes/Windows-10-Dark-master ] ; then
   cd /usr/share/themes/ || exit 1
-  sudo cp "$installer"/app/Windows-10-Dark-master.zip ./ 
+  sudo cp $HOME/google-cloud-shell-debian-de/app/Windows-10-Dark-master.zip ./ 
   unzip -qq Windows-10-Dark-master.zip 
   rm -f Windows-10-Dark-master.zip 
 fi
-cd "$HOME" || exit 1
-clear
+cd $HOME || exit 1
+
+# Inform about backup and update .bashrc
+sudo mv $HOME/.bashrc $HOME/.bashrc_old 
+echo "Your $HOME/.bashrc is being modified. Backed up the old .bashrc file as .bashrc_old"
+sudo cp $HOME/google-cloud-shell-debian-de/setupPS.sh $HOME/.bashrc 
+sudo chmod 777 $HOME/.bashrc 
 
 # Installation completed message
-printf "Installation completed!\n Run: startvps to start VNC Server!\n\n"
+printf "\n\n\nInstallation completed!\n Run: startvps to start VNC Server!\n\n"
 exit 0
