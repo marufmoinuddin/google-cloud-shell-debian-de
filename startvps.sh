@@ -59,13 +59,13 @@ sudo rm -rf /tmp/* 2> /dev/null
 vncserver :0
 
 # Start websockify for VNC access via web
-websockify -D --web=/usr/share/novnc/ --cert="$HOME/novnc.pem" 8080 localhost:5900
+websockify -D --web=/usr/share/novnc/ --cert="$HOME/novnc.pem" 8080 localhost:5900 2> /dev/null 
 
 # Configure TCP keepalive settings
-sudo /sbin/sysctl -w net.ipv4.tcp_keepalive_time=10000 net.ipv4.tcp_keepalive_intvl=5000 net.ipv4.tcp_keepalive_probes=100
+sudo /sbin/sysctl -w net.ipv4.tcp_keepalive_time=10000 net.ipv4.tcp_keepalive_intvl=5000 net.ipv4.tcp_keepalive_probes=100 2> /dev/null 
 
 # Optionally, add a message after pressing Enter
-echo "Press enter..."
+echo "\nPress ${light_cyan}Enter${reset}..."
 sall="$(service  --status-all 2> /dev/null | grep '\-' | awk '{print $4}')"
 while IFS= read -r line; do
     nohup sudo service "$line" restart &> /dev/null 2> /dev/null &
