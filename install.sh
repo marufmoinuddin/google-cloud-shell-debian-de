@@ -24,7 +24,7 @@ sudo sh -c 'echo "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/packages.micr
 
 # Update package list and install necessary packages
 sudo apt update -y 
-sudo apt install fish code software-properties-common apt-transport-https ufw xfce4 xarchiver firefox-esr mesa-utils xfce4-goodies pv nmap nano apt-utils dialog terminator autocutsel dbus-x11 dbus neofetch perl p7zip unzip zip curl tar python3 python3-pip net-tools openssl tigervnc-standalone-server tigervnc-xorg-extension novnc python3-websockify -y
+sudo apt install papirus-icon-theme fish code software-properties-common apt-transport-https ufw xfce4 xarchiver firefox-esr mesa-utils xfce4-goodies pv nmap nano apt-utils dialog terminator autocutsel dbus-x11 dbus neofetch perl p7zip unzip zip curl tar python3 python3-pip net-tools openssl tigervnc-standalone-server tigervnc-xorg-extension novnc python3-websockify -y
 
 # Set some environment variables
 export installer="$(pwd)"
@@ -66,13 +66,6 @@ if [ ! -d /usr/share/themes/Windows-10-Dark-master ] ; then
 fi
 cd "$HOME" || exit 1
 clear
-
-# Add Papirus icon theme and set as default
-if [ ! -d ~/.icons/Papirus ]; then
-  sudo apt update
-  sudo apt install papirus-icon-theme -y
-fi
-xfconf-query -c xsettings -p /Net/IconThemeName -s "Papirus"
 
 # Installation completed message
 printf "\n\n\n - Installation completed!\n Run: [startvps] to start VNC Server!\n\n"
