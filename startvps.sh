@@ -37,6 +37,10 @@ while [[ -z $server ]]; do
     esac
 done
 
+# Read and set ngrok authtoken
+read -p "Now, insert authtoken ngrok: " key
+ngrok authtoken "$key"
+
 # Start ngrok and VNC server
 nohup sudo ngrok tcp --region "$regions" 127.0.0.1:5900 &> /dev/null &
 vncserver -kill :0 &> /dev/null
