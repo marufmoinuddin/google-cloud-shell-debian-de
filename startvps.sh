@@ -39,7 +39,7 @@ done
 
 # Read and set ngrok authtoken
 read -p "Now, insert authtoken ngrok: " key
-ngrok authtoken "$key"
+sudo ngrok authtoken "$key"
 
 # Start ngrok and VNC server
 nohup sudo ngrok tcp --region "$regions" 127.0.0.1:5900 &> /dev/null &
@@ -64,6 +64,7 @@ clear
 # Get the public URL for the ngrok tunnel
 printf "\nYour IP Here: "
 curl --silent --show-error http://127.0.0.1:4040/api/tunnels | sed -nE 's/.*public_url":"tcp:..([^"]*).*/\1/p'
+
 
 # Display information for accessing the VNC server
 echo "You can also use novnc server in the browser to view your Desktop."
