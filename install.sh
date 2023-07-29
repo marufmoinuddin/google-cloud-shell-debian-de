@@ -55,29 +55,25 @@ sudo apt autoremove -y
 # Define the backup source directory
 backup_dir="$HOME/google-cloud-shell-debian-de/xfce4_backup"
 
-# Function to restore files and directories using cp
-restore_files() {
-    source_path="$1"
-    if [ -d "$source_path" ]; then
-        if [ ! -d "$HOME/.config/xfce4/$(basename $source_path)" ]; then
-            cp -r "$backup_dir/$(basename $source_path)" "$HOME/.config/xfce4"
-        else
-            echo "Skipped: $source_path already exists."
-        fi
-    fi
-}
+# Check if the backup directory exists
+if [ ! -d "$backup_dir" ]; then
+  echo "Backup directory does not exist: $backup_dir"
+  exit 1
+fi
 
-# Restore all XFCE4 settings and configurations
-restore_files "$HOME/.config/xfce4"
-restore_files "$HOME/.config/xfce4-session"
-restore_files "$HOME/.config/xfce4-panel"
-restore_files "$HOME/.config/xfce4-desktop"
-restore_files "$HOME/.config/xfce4/xfconf"
-restore_files "$HOME/.config/Thunar"
+# Check if the .config directory exists
+config_dir="$HOME/.config"
+if [ ! -d "$config_dir" ]; then
+  echo "The .config directory does not exist. Creating it..."
+  mkdir -p "$config_dir"
+fi
 
-# Restore themes and icons (optional)
-restore_files "$HOME/.themes"
-restore_files "$HOME/.icons"
+# Restore the backup to .config directory
+echo "Restoring backup from $backup_dir to $config_dir..."
+cp -R "$backup_dir"/* "$config_dir"
+
+echo "Restoration completed successfully!"
+
 
 # Check and install Windows-10-Dark-master theme
 if [ ! -d /usr/share/themes/Windows-10-Dark-master ]; then
