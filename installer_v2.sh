@@ -18,6 +18,7 @@ rm ngrok-stable-linux-amd64.zip
 sudo cp ./ngrok /bin/ngrok
 sudo chmod +x /bin/ngrok
 
+
 # Inform about the following steps in green
 echo -e "${GREEN}"
 echo "Cloud Shell already runs on Debian. Just installing the DE (Xfce amd64) and some apps...."
