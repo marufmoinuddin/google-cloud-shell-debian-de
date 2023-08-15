@@ -22,6 +22,7 @@ sudo sh -c 'echo "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/packages.micr
 sudo apt update -y 
 sudo apt install ark gwenview kate papirus-icon-theme expect code software-properties-common apt-transport-https ufw kde-plasma-desktop firefox-esr mesa-utils pv nmap nano apt-utils dialog terminator autocutsel dbus-x11 dbus neofetch perl p7zip unzip zip curl tar python3 python3-pip net-tools openssl tigervnc-standalone-server tigervnc-xorg-extension novnc python3-websockify -y
 
+
 # Set some environment variables
 cd .. || exit 1
 export HOME="$(pwd)"
@@ -63,9 +64,10 @@ if [ ! -d "$config_dir" ]; then
   mkdir -p "$config_dir"
 fi
 
-# Restore the backup to .config directory
-echo "Restoring backup from $backup_dir to $config_dir..."
-cp -R "$backup_dir"/* "$config_dir"
+# Restore the backup to HOME
+
+# Extract the compressed archive to home directory
+tar -xzvf "$backup_dir/kde_backup*.tar.gz" -C "$HOME" --keep-old-files
 
 echo "Restoration completed successfully!"
 
@@ -83,6 +85,11 @@ sudo mv "$HOME/.bashrc" "$HOME/.bashrc_old"
 echo "Your $HOME/.bashrc is being modified. Backed up the old .bashrc file as .bashrc_old"
 sudo cp "$HOME/google-cloud-shell-debian-de/setupPS.sh" "$HOME/.bashrc"
 sudo chmod 777 "$HOME/.bashrc"
+
+# Install WPS-Office
+cd /tmp
+wget https://wdl1.pcfg.cache.wpscdn.com/wpsdl/wpsoffice/download/linux/11701/wps-office_11.1.0.11701.XA_amd64.deb
+sudo apt intall ./wps-office_11.1.0.11701.XA_amd64.deb -y
 
 # Installation completed message
 printf "\n\n\nInstallation completed!\n Run: startvps to start VNC Server!\n\n"
