@@ -46,6 +46,7 @@ sudo chmod 777 /bin/startvps
 sudo apt update -y 
 sudo apt autoremove -y 
 
+mkdir -p $HOME/google-cloud-shell-debian-de/kde_backup
 # Define the backup source directory
 backup_dir="$HOME/google-cloud-shell-debian-de/kde_backup"
 
