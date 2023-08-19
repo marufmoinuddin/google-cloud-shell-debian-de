@@ -15,7 +15,7 @@
 cd ~
 git clone https://github.com/marufmoinuddin/google-cloud-shell-debian-de.git
 cd google-cloud-shell-debian-de
-sudo bash install.sh
+sh install.sh
 ```
 
 4. (Optional) Get authtoken ngrok [Here](https://dashboard.ngrok.com/get-started/your-authtoken) . Or You can use port 8080 to visit the desktop.
@@ -28,7 +28,7 @@ sudo bash install.sh
 
 1. Use this command:
 ```bash
-startvps
+vps
 ```
 
 2. Wait a moment, you will get the IP
