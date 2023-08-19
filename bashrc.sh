@@ -124,7 +124,7 @@ de() {
 
 #Alias for "myip" command
 myip(){
- wget -qO- https://ipecho.net/plain ; echo
+ curl ifconfig.me
 }
 
 
