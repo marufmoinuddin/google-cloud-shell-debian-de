@@ -4,9 +4,10 @@
 echo "Preparing to install...."
 
 # Unzip and move ngrok binary
+wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip
 unzip ngrok-stable-linux-amd64.zip 
 rm ngrok-stable-linux-amd64.zip 
-sudo cp ./ngrok /bin/ngrok
+sudo mv ./ngrok /bin/ngrok
 sudo chmod +x /bin/ngrok
 
 # Inform about the following steps
