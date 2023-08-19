@@ -114,8 +114,8 @@ sudo apt autoremove -y
 if [ ! -d /usr/share/themes/Windows-10-Dark-master ]; then
   cd /usr/share/themes/ || exit 1
   sudo cp "$HOME/google-cloud-shell-debian-de/app/Windows-10-Dark-master.zip" ./
-  unzip -qq Windows-10-Dark-master.zip
-  rm -f Windows-10-Dark-master.zip
+  sudo unzip -qq Windows-10-Dark-master.zip
+  sudo rm -f Windows-10-Dark-master.zip
 fi
 cd "$HOME" || exit 1
 
