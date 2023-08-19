@@ -4,10 +4,11 @@
 echo "Select a desktop environment:"
 echo "1. KDE"
 echo "2. Xfce"
-echo -n "Enter your choice (1/2) [default is KDE]: "
+echo "3. GNOME"
+echo -n "Enter your choice (1/2/3) [default is KDE]: "
 
 # Set timeout for user input (5 seconds)
-read -t 5 choice
+read -t 10 choice
 
 # Set the default choice if timeout occurs or invalid input is given
 if [ -z "$choice" ]; then
@@ -74,7 +75,17 @@ elif [ "$choice" = "2" ]; then
     echo "Restoring backup from $backup_dir to $config_dir..."
     cp -R "$backup_dir"/* "$config_dir"
     echo "Restoration completed successfully!"
-
+elif [ "$choice" = "3" ]; then
+    # GNOME installation
+    echo "You selected GNOME..."
+    sudo apt install gnome-session gnome-terminal gnome-control-center gnome-tweaks -y
+    sudo printf '#!/bin/bash\ndbus-launch &> /dev/null\nautocutsel -fork\ngnome-session\n' > "$HOME/.vnc/xstartup"
+    # Define the backup source directory
+    backup_dir="$HOME/google-cloud-shell-debian-de/gnome_backup"
+    # Restore the backup to .config directory
+    echo "Restoring backup from $backup_dir to $config_dir..."
+    cp -R "$backup_dir"/* "$config_dir"
+    echo "Restoration completed successfully!"
 else
     echo "Invalid choice. Installing KDE by default..."
     echo "You selected KDE..."
