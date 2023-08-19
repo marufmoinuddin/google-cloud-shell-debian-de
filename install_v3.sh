@@ -55,6 +55,7 @@ if [ "$choice" = "1" ]; then
     # KDE installation
     echo "You selected KDE..."
     sudo apt install ark konsole gwenview kate okular kde-plasma-desktop -y
+    sudo apt remove kdeconnect -y
     sudo printf '#!/bin/bash\ndbus-launch &> /dev/null\nautocutsel -fork\nstartplasma-x11\n' > "$HOME/.vnc/xstartup"
     # Restore the backup to HOME
     # Extract the compressed archive to home directory
