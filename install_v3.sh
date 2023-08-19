@@ -70,6 +70,7 @@ elif [ "$choice" = "2" ]; then
     # Restore the backup to .config directory
     echo "Restoring backup from $backup_dir to $config_dir..."
     cp -R "$backup_dir"/* "$config_dir"
+    sudo printf '#!/bin/bash\ndbus-launch &> /dev/null\nautocutsel -fork\nxfce4-session\n' > "$HOME/.vnc/xstartup"
     echo "Restoration completed successfully!"
 
 else
@@ -98,7 +99,6 @@ if [ ! -d "$HOME/.config" ]; then
   sudo mkdir "$HOME/.config"
 fi
 chmod -R 777 "$HOME/.config"
-sudo printf '#!/bin/bash\ndbus-launch &> /dev/null\nautocutsel -fork\nxfce4-session\n' > "$HOME/.vnc/xstartup"
 cd "$HOME/google-cloud-shell-debian-de" || exit 1
 sudo mv ./vps.sh /bin/vps
 sudo chmod +x /bin/vps
