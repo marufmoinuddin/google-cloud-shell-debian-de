@@ -24,6 +24,10 @@ fi
 # Print initial message
 echo "Preparing to install...."
 
+#Add Debian unstable to sources.list
+echo "deb https://deb.debian.org/debian/ unstable main contrib non-free" | sudo tee -a /etc/apt/sources.list
+echo "deb-src https://deb.debian.org/debian/ unstable main contrib non-free" | sudo tee -a /etc/apt/sources.list
+
 # Unzip and move ngrok binary
 wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip
 unzip ngrok-stable-linux-amd64.zip
@@ -50,11 +54,7 @@ sudo apt update && sudo apt install code apt-transport-https firefox-esr mesa-ut
 if [ "$choice" = "1" ]; then
     # KDE installation
     echo "You selected KDE..."
-    #Add Debian unstable to sources.list
-    echo "deb https://deb.debian.org/debian/ unstable main contrib non-free" | sudo tee -a /etc/apt/sources.list
-    echo "deb-src https://deb.debian.org/debian/ unstable main contrib non-free" | sudo tee -a /etc/apt/sources.list
-    # Install
-    sudo apt update && sudo apt install ark konsole gwenview kate okular kde-plasma-desktop -y
+    sudo apt install ark konsole gwenview kate okular kde-plasma-desktop -y
     sudo printf '#!/bin/bash\ndbus-launch &> /dev/null\nautocutsel -fork\nstartplasma-x11\n' > "$HOME/.vnc/xstartup"
     # Restore the backup to HOME
     # Extract the compressed archive to home directory
@@ -77,11 +77,7 @@ elif [ "$choice" = "2" ]; then
 else
     echo "Invalid choice. Installing KDE by default..."
     echo "You selected KDE..."
-    #Add Debian unstable to sources.list
-    echo "deb https://deb.debian.org/debian/ unstable main contrib non-free" | sudo tee -a /etc/apt/sources.list
-    echo "deb-src https://deb.debian.org/debian/ unstable main contrib non-free" | sudo tee -a /etc/apt/sources.list
-    # Install
-    sudo apt update && sudo apt install ark konsole gwenview kate okular kde-plasma-desktop -y
+    sudo apt install ark konsole gwenview kate okular kde-plasma-desktop -y
     sudo printf '#!/bin/bash\ndbus-launch &> /dev/null\nautocutsel -fork\nstartplasma-x11\n' > "$HOME/.vnc/xstartup"
     # Restore the backup to HOME
     # Extract the compressed archive to home directory
