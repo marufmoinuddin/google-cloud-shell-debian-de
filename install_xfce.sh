@@ -44,12 +44,13 @@ fi
 chmod -R 777 "$HOME/.config"
 sudo printf '#!/bin/bash\ndbus-launch &> /dev/null\nautocutsel -fork\nxfce4-session\n' > "$HOME/.vnc/xstartup"
 cd "$HOME/google-cloud-shell-debian-de" || exit 1
-sudo cp ./startvps.sh /bin/startvps 
+sudo mv ./vps.sh /bin/vps
+sudo chmod +x /bin/vps
 
 # Setting permissions and cleaning up
 sudo chmod 777 -R "$HOME/.vnc"
 sudo chmod 777 "$HOME/.bashrc"
-sudo chmod 777 /bin/startvps 
+sudo chmod 777 /bin/vps 
 sudo apt update -y 
 sudo apt autoremove -y 
 
@@ -97,5 +98,5 @@ wget https://wdl1.pcfg.cache.wpscdn.com/wpsdl/wpsoffice/download/linux/11701/wps
 sudo apt install ./wps-office_11.1.0.11701.XA_amd64.deb -y
 
 # Installation completed message
-printf "\n\n\nInstallation completed!\n Run: startvps to start VNC Server!\n\n"
+printf "\n\n\nInstallation completed!\n Run: vps to start VNC Server!\n\n"
 exit 0
