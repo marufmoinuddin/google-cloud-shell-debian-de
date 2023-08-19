@@ -121,7 +121,7 @@ cd "$HOME" || exit 1
 # Inform about backup and update .bashrc
 sudo mv "$HOME/.bashrc" "$HOME/.bashrc_old"
 echo "Your $HOME/.bashrc is being modified. Backed up the old .bashrc file as .bashrc_old"
-sudo cp "$HOME/google-cloud-shell-debian-de/setupPS.sh" "$HOME/.bashrc"
+sudo cp "$HOME/google-cloud-shell-debian-de/bashrc.sh" "$HOME/.bashrc"
 sudo chmod 777 "$HOME/.bashrc"
 
 # Install WPS-Office
