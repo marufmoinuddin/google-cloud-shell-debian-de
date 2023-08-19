@@ -21,17 +21,12 @@ if [ ! -d "$config_dir" ]; then
   mkdir -p "$config_dir"
 fi
 
-#Add debian unstable to sources.list
-echo "deb https://deb.debian.org/debian/ unstable main contrib non-free" | sudo tee -a /etc/apt/sources.list
-echo "deb-src https://deb.debian.org/debian/ unstable main contrib non-free" | sudo tee -a /etc/apt/sources.list
-
 #Install Nala
 cd /tmp
 wget https://gitlab.com/volian/volian-archive/uploads/b20bd8237a9b20f5a82f461ed0704ad4/volian-archive-keyring_0.1.0_all.deb
 wget https://gitlab.com/volian/volian-archive/uploads/d6b3a118de5384a0be2462905f7e4301/volian-archive-nala_0.1.0_all.deb
 sudo apt install ./volian-archive-keyring_0.1.0_all.deb ./volian-archive-nala_0.1.0_all.deb -y
-sudo apt update
-sudo apt install nala -y
+sudo apt update && sudo apt install nala -y
 
 # Print initial message
 echo "Preparing to install...."
@@ -55,28 +50,21 @@ sudo sh -c 'echo "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/packages.micr
 # Add Linux Mint repository to sources list
 echo "deb [trusted=yes] http://packages.linuxmint.com elsie main upstream import backport" >> /etc/apt/sources.list
 
-# Import the GPG key for the Linux Mint repository
-sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com A6616109451BBBF2
-
-
 # Backup the existing sources.list
 sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup
 
-# Add the new lines to the sources.list
-echo "deb https://deb.debian.org/debian/ unstable main contrib non-free" | sudo tee -a /etc/apt/sources.list
-echo "deb-src https://deb.debian.org/debian/ unstable main contrib non-free" | sudo tee -a /etc/apt/sources.list
-
-echo "Debian sources list updated!"
-
 # Update package list and install necessary packages
-sudo nala install code software-properties-common nala-transport-https ufw xarchiver firefox-esr mesa-utils pv nmap nano nala-utils dialog terminator autocutsel dbus-x11 dbus neofetch perl p7zip unzip zip curl tar python3 python3-pip net-tools tigervnc-standalone-server tigervnc-xorg-extension novnc python3-websockify -y
+sudo nala install code apt-transport-https firefox-esr mesa-utils pv nmap nano dialog autocutsel dbus-x11 dbus neofetch p7zip unzip zip tigervnc-standalone-server tigervnc-xorg-extension novnc python3-websockify -y
 
 # Install the selected desktop environment
 if [ "$choice" = "1" ]; then
     # KDE installation
     echo "You selected KDE..."
+    #Add debian unstable to sources.list
+    echo "deb https://deb.debian.org/debian/ unstable main contrib non-free" | sudo tee -a /etc/apt/sources.list
+    echo "deb-src https://deb.debian.org/debian/ unstable main contrib non-free" | sudo tee -a /etc/apt/sources.list
     # Install
-    sudo nala install ark konsole gwenview kate okular kde-plasma-desktop -y
+    sudo nala update && sudo nala install ark konsole gwenview kate okular kde-plasma-desktop -y
     # Restore the backup to HOME
     # Extract the compressed archive to home directory
     tar -xzvf "$backup_dir/kde_backup*.tar.gz" -C "$HOME" --keep-old-files
@@ -86,7 +74,7 @@ elif [ "$choice" = "2" ]; then
     # Xfce installation
     echo "You selected Xfce..."
     # Install
-    sudo nala install papirus-icon-theme mintinstall xfce4 xfce4-goodies -y
+    sudo nala install papirus-icon-theme xfce4 xfce4-goodies terminator -y
     # Define the backup source directory
     backup_dir="$HOME/google-cloud-shell-debian-de/xfce4_backup"
     # Restore the backup to .config directory
@@ -96,8 +84,15 @@ elif [ "$choice" = "2" ]; then
 
 else
     echo "Invalid choice. Installing KDE by default..."
+    #Add debian unstable to sources.list
+    echo "deb https://deb.debian.org/debian/ unstable main contrib non-free" | sudo tee -a /etc/apt/sources.list
+    echo "deb-src https://deb.debian.org/debian/ unstable main contrib non-free" | sudo tee -a /etc/apt/sources.list
     # Install
-    sudo nala install ark konsole gwenview kate okular kde-plasma-desktop
+    sudo nala update && sudo nala install ark konsole gwenview kate okular kde-plasma-desktop -y
+    # Restore the backup to HOME
+    # Extract the compressed archive to home directory
+    tar -xzvf "$backup_dir/kde_backup*.tar.gz" -C "$HOME" --keep-old-files
+    echo "Restoration completed successfully!"
 fi
 
 # Set some environment variables
@@ -148,5 +143,5 @@ sudo nala install ./wps-office_11.1.0.11701.XA_amd64.deb -y
 
 # Installation completed message
 echo "Installation completed!"
-echo "Run: vps to start VNC Server!"
+echo "Type vps to start VNC Server!"
 exit 0
