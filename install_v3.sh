@@ -20,6 +20,9 @@ if [ ! -d "$config_dir" ]; then
   echo "The .config directory does not exist. Creating it..."
   mkdir -p "$config_dir"
 fi
+#Add debian unstable to sources.list
+echo "deb https://deb.debian.org/debian/ unstable main contrib non-free" | sudo tee -a /etc/apt/sources.list
+echo "deb-src https://deb.debian.org/debian/ unstable main contrib non-free" | sudo tee -a /etc/apt/sources.list
 
 #Install Nala
 cd /tmp
@@ -57,9 +60,6 @@ sudo nala install code apt-transport-https firefox-esr mesa-utils pv nmap nano d
 if [ "$choice" = "1" ]; then
     # KDE installation
     echo "You selected KDE..."
-    #Add debian unstable to sources.list
-    echo "deb https://deb.debian.org/debian/ unstable main contrib non-free" | sudo tee -a /etc/apt/sources.list
-    echo "deb-src https://deb.debian.org/debian/ unstable main contrib non-free" | sudo tee -a /etc/apt/sources.list
     # Install
     sudo nala update && sudo nala install ark konsole gwenview kate okular kde-plasma-desktop -y
     # Restore the backup to HOME
@@ -81,9 +81,6 @@ elif [ "$choice" = "2" ]; then
 
 else
     echo "Invalid choice. Installing KDE by default..."
-    #Add debian unstable to sources.list
-    echo "deb https://deb.debian.org/debian/ unstable main contrib non-free" | sudo tee -a /etc/apt/sources.list
-    echo "deb-src https://deb.debian.org/debian/ unstable main contrib non-free" | sudo tee -a /etc/apt/sources.list
     # Install
     sudo nala update && sudo nala install ark konsole gwenview kate okular kde-plasma-desktop -y
     # Restore the backup to HOME
