@@ -55,6 +55,7 @@ if [ "$choice" = "1" ]; then
     echo "deb-src https://deb.debian.org/debian/ unstable main contrib non-free" | sudo tee -a /etc/apt/sources.list
     # Install
     sudo apt update && sudo apt install ark konsole gwenview kate okular kde-plasma-desktop -y
+    sudo printf '#!/bin/bash\ndbus-launch &> /dev/null\nautocutsel -fork\nstartplasma-x11\n' > "$HOME/.vnc/xstartup"
     # Restore the backup to HOME
     # Extract the compressed archive to home directory
     tar -xzvf "$backup_dir/kde_backup*.tar.gz" -C "$HOME" --keep-old-files
@@ -65,21 +66,23 @@ elif [ "$choice" = "2" ]; then
     echo "You selected Xfce..."
     # Install
     sudo apt install papirus-icon-theme xfce4 xfce4-goodies terminator -y
+    sudo printf '#!/bin/bash\ndbus-launch &> /dev/null\nautocutsel -fork\nxfce4-session\n' > "$HOME/.vnc/xstartup"
     # Define the backup source directory
     backup_dir="$HOME/google-cloud-shell-debian-de/xfce4_backup"
     # Restore the backup to .config directory
     echo "Restoring backup from $backup_dir to $config_dir..."
     cp -R "$backup_dir"/* "$config_dir"
-    sudo printf '#!/bin/bash\ndbus-launch &> /dev/null\nautocutsel -fork\nxfce4-session\n' > "$HOME/.vnc/xstartup"
     echo "Restoration completed successfully!"
 
 else
     echo "Invalid choice. Installing KDE by default..."
+    echo "You selected KDE..."
     #Add Debian unstable to sources.list
     echo "deb https://deb.debian.org/debian/ unstable main contrib non-free" | sudo tee -a /etc/apt/sources.list
     echo "deb-src https://deb.debian.org/debian/ unstable main contrib non-free" | sudo tee -a /etc/apt/sources.list
     # Install
     sudo apt update && sudo apt install ark konsole gwenview kate okular kde-plasma-desktop -y
+    sudo printf '#!/bin/bash\ndbus-launch &> /dev/null\nautocutsel -fork\nstartplasma-x11\n' > "$HOME/.vnc/xstartup"
     # Restore the backup to HOME
     # Extract the compressed archive to home directory
     tar -xzvf "$backup_dir/kde_backup*.tar.gz" -C "$HOME" --keep-old-files
