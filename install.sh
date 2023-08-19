@@ -100,13 +100,12 @@ if [ ! -d "$HOME/.config" ]; then
 fi
 chmod -R 777 "$HOME/.config"
 cd "$HOME/google-cloud-shell-debian-de" || exit 1
-sudo mv ./vps.sh /bin/vps
-sudo chmod +x /bin/vps
+sudo mv ./vps.sh /usr/bin/vps
+sudo chmod +x /usr/bin/vps
 
 # Setting permissions and cleaning up
 sudo chmod 777 -R "$HOME/.vnc"
 sudo chmod 777 "$HOME/.bashrc"
-sudo chmod 777 /bin/vps
 sudo apt update -y
 sudo apt autoremove -y
 
