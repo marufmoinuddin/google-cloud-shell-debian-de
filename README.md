@@ -37,6 +37,7 @@ Google Cloud Shell offers a powerful cloud-based development environment that en
    vps
    ```
 (Optional. If you donot want ngrok just press Enter while in the input prompt)
+
 2. Get authtoken ngrok [Here](https://dashboard.ngrok.com/get-started/your-authtoken) . Or You can use port 8080 to visit the desktop.
 3. Insert your authtoken ngrok
 2. Wait a moment, you will get the IP
