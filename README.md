@@ -1,5 +1,5 @@
 # Debian Xfce Desktop on Google Shell
- - Run Debian with xfce DE on Google Cloud Shell
+ - Run Debian with Gnome(WIP) or KDE or xfce DE on Google Cloud Shell
 
 # How to install?
  - Tutorial: [Not-available]
