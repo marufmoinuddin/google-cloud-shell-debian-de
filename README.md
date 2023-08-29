@@ -22,20 +22,20 @@ Google Cloud Shell offers a powerful cloud-based development environment that en
    ```
 3. Paste this code to the shell and hit Enter:
 
-```bash
-cd ~
-git clone https://github.com/marufmoinuddin/google-cloud-shell-debian-de.git
-cd google-cloud-shell-debian-de
-sh install.sh
-```
+   ```bash
+   cd ~
+   git clone https://github.com/marufmoinuddin/google-cloud-shell-debian-de.git
+   cd google-cloud-shell-debian-de
+   sh install.sh
+   ```
 6. Wait for the install to finish. There might be some prompts you need to interact with!
 7. When install finishes there will be a message saying to type `vps` and hit enter.
    
 ## How to start?
 1. Use this command and interact with the on screen prompts:
-```bash
-vps
-```
+   ```bash
+   vps
+   ```
 (Optional. If you donot want ngrok just press Enter while in the input prompt)
 2. Get authtoken ngrok [Here](https://dashboard.ngrok.com/get-started/your-authtoken) . Or You can use port 8080 to visit the desktop.
 3. Insert your authtoken ngrok
