@@ -78,7 +78,7 @@ elif [ "$choice" = "2" ]; then
 elif [ "$choice" = "3" ]; then
     # GNOME installation
     echo "You selected GNOME..."
-    sudo apt install gnome-session gnome-terminal gnome-control-center gnome-tweaks -y
+    sudo apt install gnome-core gnome-session gnome-terminal gnome-control-center gnome-tweaks -y
     sudo printf '#!/bin/bash\ndbus-launch &> /dev/null\nautocutsel -fork\ngnome-session\n' > "$HOME/.vnc/xstartup"
     # Define the backup source directory
     backup_dir="$HOME/google-cloud-shell-debian-de/gnome_backup"
