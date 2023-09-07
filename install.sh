@@ -80,13 +80,9 @@ elif [ "$choice" = "3" ]; then
     echo "You selected GNOME..."
     # Install additional packages from experimental repository
     echo "You selected GNOME and additional packages..."
-    sudo apt install -t experimental baobab eog evince gdm3 gjs gnome-backgrounds gnome-calculator gnome-characters gnome-contacts gnome-control-center gnome-disk-utility gnome-font-viewer gnome-keyring gnome-logs gnome-menus gnome-online-accounts gnome-remote-desktop gnome-session gnome-settings-daemon gnome-shell gnome-shell-extensions gnome-software gnome-system-monitor gnome-text-editor gnome-user-docs mutter gnome-desktop3-data -y
-    
-    # Mark additional packages as automatically installed
-    sudo apt-mark auto baobab eog evince gdm3 gjs gnome-backgrounds gnome-calculator gnome-characters gnome-contacts gnome-control-center gnome-disk-utility gnome-font-viewer gnome-keyring gnome-logs gnome-menus gnome-online-accounts gnome-remote-desktop gnome-session gnome-settings-daemon gnome-shell gnome-shell-extensions gnome-software gnome-system-monitor gnome-text-editor gnome-user-docs mutter gnome-desktop3-data
-        
+    sudo apt install gnome-flashback metacity baobab eog evince gdm3 gjs gnome-backgrounds gnome-calculator gnome-characters gnome-contacts gnome-control-center gnome-disk-utility gnome-font-viewer gnome-keyring gnome-logs gnome-menus gnome-online-accounts gnome-remote-desktop gnome-session gnome-settings-daemon gnome-shell gnome-shell-extensions gnome-software gnome-system-monitor gnome-text-editor gnome-user-docs mutter gnome-desktop3-data -y    
     # Create or update the VNC startup script using printf
-    printf '#!/bin/sh\n\nunset SESSION_MANAGER\nunset DBUS_SESSION_BUS_ADDRESS\n\n[ -x /etc/vnc/xstartup ] && exec /etc/vnc/xstartup\n[ -r $HOME/.Xresources ] && xrdb $HOME/.Xresources\n\nexport XKL_XMODMAP_DISABLE=1\nexport XDG_CURRENT_DESKTOP="GNOME-Flashback:Unity"\nexport XDG_MENU_PREFIX="gnome-flashback-"\n\ngnome-session --disable-acceleration-check &\n' > "$HOME/.vnc/xstartup"
+    sudo printf '#!/bin/sh\n\nunset SESSION_MANAGER\nunset DBUS_SESSION_BUS_ADDRESS\n\n[ -x /etc/vnc/xstartup ] && exec /etc/vnc/xstartup\n[ -r $HOME/.Xresources ] && xrdb $HOME/.Xresources\n\nexport XKL_XMODMAP_DISABLE=1\nexport XDG_CURRENT_DESKTOP="GNOME-Flashback:Unity"\nexport XDG_MENU_PREFIX="gnome-flashback-"\n\ngnome-session --disable-acceleration-check &\n' > "$HOME/.vnc/xstartup"
 else
     echo "Invalid choice. Installing KDE by default..."
     echo "You selected KDE..."
