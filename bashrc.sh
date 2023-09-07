@@ -125,6 +125,7 @@ de() {
 #Alias for "myip" command
 myip(){
  curl ifconfig.me
+ echo -e ""
 }
 
 
