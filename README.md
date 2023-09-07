@@ -1,5 +1,5 @@
 # Debian Desktop on Google Shell
- - Run Debian with Gnome(WIP) or KDE or xfce DE on Google Cloud Shell
+ - Run Debian with KDE or xfce DE UKUI(WIP) on Google Cloud Shell
 
 ## Introduction
 
