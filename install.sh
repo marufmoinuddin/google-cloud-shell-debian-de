@@ -78,14 +78,15 @@ elif [ "$choice" = "2" ]; then
 elif [ "$choice" = "3" ]; then
     # GNOME installation
     echo "You selected GNOME..."
-    sudo apt install gnome-core gnome-session gnome-terminal gnome-control-center gnome-tweaks -y
-    sudo printf '#!/bin/bash\ndbus-launch &> /dev/null\nautocutsel -fork\ngnome-session\n' > "$HOME/.vnc/xstartup"
-    # Define the backup source directory
-    backup_dir="$HOME/google-cloud-shell-debian-de/gnome_backup"
-    # Restore the backup to .config directory
-    echo "Restoring backup from $backup_dir to $config_dir..."
-    cp -R "$backup_dir"/* "$config_dir"
-    echo "Restoration completed successfully!"
+    # Install additional packages from experimental repository
+    echo "You selected GNOME and additional packages..."
+    sudo apt install -t gnome-session-flashback metacity experimental baobab eog evince gdm3 gjs gnome-backgrounds gnome-calculator gnome-characters gnome-contacts gnome-control-center gnome-disk-utility gnome-font-viewer gnome-keyring gnome-logs gnome-menus gnome-online-accounts gnome-remote-desktop gnome-session gnome-settings-daemon gnome-shell gnome-shell-extensions gnome-software gnome-system-monitor gnome-text-editor gnome-user-docs mutter gnome-desktop3-data -y
+    
+    # Mark additional packages as automatically installed
+    sudo apt-mark auto baobab eog evince gdm3 gjs gnome-backgrounds gnome-calculator gnome-characters gnome-contacts gnome-control-center gnome-disk-utility gnome-font-viewer gnome-keyring gnome-logs gnome-menus gnome-online-accounts gnome-remote-desktop gnome-session gnome-settings-daemon gnome-shell gnome-shell-extensions gnome-software gnome-system-monitor gnome-text-editor gnome-user-docs mutter gnome-desktop3-data
+        
+    # Create or update the VNC startup script using printf
+    printf '#!/bin/sh\n\nunset SESSION_MANAGER\nunset DBUS_SESSION_BUS_ADDRESS\n\n[ -x /etc/vnc/xstartup ] && exec /etc/vnc/xstartup\n[ -r $HOME/.Xresources ] && xrdb $HOME/.Xresources\n\nexport XKL_XMODMAP_DISABLE=1\nexport XDG_CURRENT_DESKTOP="GNOME-Flashback:Unity"\nexport XDG_MENU_PREFIX="gnome-flashback-"\n\ngnome-session --session=gnome-flashback-metacity --disable-acceleration-check &\n' > "$HOME/.vnc/xstartup"
 else
     echo "Invalid choice. Installing KDE by default..."
     echo "You selected KDE..."
