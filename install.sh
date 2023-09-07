@@ -4,7 +4,7 @@
 echo "Select a desktop environment:"
 echo "1. KDE"
 echo "2. Xfce"
-echo "3. GNOME"
+echo "3. UKUI"
 echo -n "Enter your choice (1/2/3) [default is KDE]: "
 
 # Set timeout for user input (5 seconds)
@@ -51,6 +51,17 @@ sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup
 # Update package list and install necessary packages
 sudo apt update && sudo apt install code apt-transport-https firefox-esr mesa-utils pv nmap nano dialog autocutsel dbus-x11 dbus neofetch p7zip unzip zip tigervnc-standalone-server tigervnc-xorg-extension novnc python3-websockify -y
 
+# Set some environment variables
+cd .. || exit 1
+export HOME="$(pwd)"
+export DISPLAY=":0"
+cd "$HOME" || exit 1
+sudo rm -rf "$HOME/.vnc"
+sudo mkdir "$HOME/.vnc"
+clear
+echo "-- SET A PASSWORD --"
+vncpasswd
+
 # Install the selected desktop environment
 if [ "$choice" = "1" ]; then
     # KDE installation
@@ -68,7 +79,7 @@ elif [ "$choice" = "2" ]; then
     echo "You selected Xfce..."
     # Install
     sudo apt install papirus-icon-theme xfce4 xfce4-goodies terminator -y
-    sudo printf '#!/bin/bash\ndbus-launch &> /dev/null\nautocutsel -fork\nxfce4-session\n' > "$HOME/.vnc/xstartup"
+    printf '#!/bin/bash\ndbus-launch &> /dev/null\nautocutsel -fork\nxfce4-session\n' > "$HOME/.vnc/xstartup"
     # Define the backup source directory
     backup_dir="$HOME/google-cloud-shell-debian-de/xfce4_backup"
     # Restore the backup to .config directory
@@ -76,31 +87,24 @@ elif [ "$choice" = "2" ]; then
     cp -R "$backup_dir"/* "$config_dir"
     echo "Restoration completed successfully!"
 elif [ "$choice" = "3" ]; then
-    # GNOME installation
-    echo "You selected GNOME..."
+    # UKUI installation
+    echo "You selected UKUI..."
+    sudo cp ~/.Xauthority /root
     # Install additional packages from experimental repository
-    echo "You selected GNOME and additional packages..."
-    sudo apt install gnome-flashback metacity baobab eog evince gdm3 gjs gnome-backgrounds gnome-calculator gnome-characters gnome-contacts gnome-control-center gnome-disk-utility gnome-font-viewer gnome-keyring gnome-logs gnome-menus gnome-online-accounts gnome-remote-desktop gnome-session gnome-shell gnome-shell-extensions gnome-software gnome-system-monitor gnome-text-editor gnome-user-docs mutter gnome-desktop3-data -y    
+    sudo apt install ukui* ukwm qt5-ukui-platformtheme kylin-nm -y
     # Create or update the VNC startup script using printf
-    sudo printf '#!/bin/bash\ndbus-launch &> /dev/null\nautocutsel -fork\ngnome-session\n' > "$HOME/.vnc/xstartup"
+    printf '#!/bin/bash\nexport GTK_IM_MODULE="fcitx"\nexport QT_IM_MODULE="fcitx"\nexport XMODIFIERS="@im=fcitx"\nunset SESSION_MANAGER\nunset DBUS_SESSION_BUS_ADDRESS\nxrdb $HOME/.xresources\nlightdm &\nexec /usr/bin/ukui-session\n' > "$HOME/.vnc/xstartup"
 else
     echo "Invalid choice. Installing KDE by default..."
     echo "You selected KDE..."
     sudo apt install ark konsole gwenview kate okular kde-plasma-desktop -y
-    sudo printf '#!/bin/bash\ndbus-launch &> /dev/null\nautocutsel -fork\nstartplasma-x11\n' > "$HOME/.vnc/xstartup"
+    printf '#!/bin/bash\ndbus-launch &> /dev/null\nautocutsel -fork\nstartplasma-x11\n' > "$HOME/.vnc/xstartup"
     # Restore the backup to HOME
     # Extract the compressed archive to home directory
     tar -xzvf "$backup_dir/kde_backup*.tar.gz" -C "$HOME" --keep-old-files
     echo "Restoration completed successfully!"
 fi
-
-# Set some environment variables
-cd .. || exit 1
-export HOME="$(pwd)"
-export DISPLAY=":0"
-cd "$HOME" || exit 1
-sudo rm -rf "$HOME/.vnc"
-sudo mkdir "$HOME/.vnc"
+chmod 755 $HOME/.vnc/xstartup
 
 # Preparing VNC's desktop environment execution
 if [ ! -d "$HOME/.config" ]; then
