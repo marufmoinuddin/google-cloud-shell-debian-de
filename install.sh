@@ -89,9 +89,10 @@ elif [ "$choice" = "2" ]; then
 elif [ "$choice" = "3" ]; then
     # UKUI installation
     echo "You selected UKUI..."
-    sudo cp $HOME/.Xauthority /root
     # Install additional packages from experimental repository
     sudo apt install ukui* ukwm qt5-ukui-platformtheme kylin-nm -y
+    sudo cp $HOME/.Xauthority /root
+    sudo apt install ukui-settings-daemon ukwm -y
     # Create or update the VNC startup script using printf
     printf '#!/bin/bash\nexport GTK_IM_MODULE="fcitx"\nexport QT_IM_MODULE="fcitx"\nexport XMODIFIERS="@im=fcitx"\nunset SESSION_MANAGER\nunset DBUS_SESSION_BUS_ADDRESS\nxrdb $HOME/.xresources\nlightdm &\nexec /usr/bin/ukui-session\n' > "$HOME/.vnc/xstartup"
 else
