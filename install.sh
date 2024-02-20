@@ -30,11 +30,7 @@ echo "Preparing to install...."
 #echo "deb-src https://deb.debian.org/debian/ unstable main contrib non-free" | sudo tee -a /etc/apt/sources.list
 
 # Unzip and move ngrok binary
-wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip
-unzip ngrok-stable-linux-amd64.zip
-rm ngrok-stable-linux-amd64.zip
-sudo mv ./ngrok /bin/ngrok
-sudo chmod +x /bin/ngrok
+ curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null && echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | sudo tee /etc/apt/sources.list.d/ngrok.list 
 
 # Inform about the following steps
 echo ""
@@ -49,7 +45,7 @@ sudo sh -c 'echo "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/packages.micr
 sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup
 
 # Update package list and install necessary packages
-sudo apt update && sudo apt install code apt-transport-https firefox-esr mesa-utils pv nmap nano dialog autocutsel dbus-x11 dbus neofetch p7zip unzip zip tigervnc-standalone-server tigervnc-xorg-extension novnc python3-websockify -y
+sudo apt update && sudo apt install ngrok nemo code apt-transport-https firefox-esr mesa-utils pv nmap nano dialog autocutsel dbus-x11 dbus neofetch p7zip unzip zip tigervnc-standalone-server tigervnc-xorg-extension novnc python3-websockify -y
 
 # Set some environment variables
 cd .. || exit 1
