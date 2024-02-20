@@ -55,8 +55,8 @@ cd "$HOME" || exit 1
 sudo rm -rf "$HOME/.vnc"
 sudo mkdir "$HOME/.vnc"
 clear
-echo "-- SET A PASSWORD --"
-vncpasswd
+#echo "-- SET A PASSWORD --"
+#vncpasswd
 
 # Install the selected desktop environment
 if [ "$choice" = "1" ]; then
