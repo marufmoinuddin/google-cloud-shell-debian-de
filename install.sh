@@ -41,11 +41,29 @@ wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > pa
 sudo install -o root -g root -m 644 packages.microsoft.gpg /etc/apt/trusted.gpg.d/
 sudo sh -c 'echo "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/packages.microsoft.gpg] https://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list'
 
+#Onedrive install script
+wget -qO - https://download.opensuse.org/repositories/home:/npreining:/debian-ubuntu-onedrive/xUbuntu_22.04/Release.key | gpg --dearmor | sudo tee /usr/share/keyrings/obs-onedrive.gpg > /dev/null
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/obs-onedrive.gpg] https://download.opensuse.org/repositories/home:/npreining:/debian-ubuntu-onedrive/xUbuntu_20.04/ ./" | sudo tee /etc/apt/sources.list.d/onedrive.list
+wget -P /tmp http://archive.ubuntu.com/ubuntu/pool/universe/l/ldc/libphobos2-ldc-shared90_1.20.1-1_amd64.deb
+wget -P /tmp http://archive.ubuntu.com/ubuntu/pool/main/l/llvm-toolchain-10/libllvm10_10.0.0-4ubuntu1_amd64.deb
+sudo apt install /tmp/libllvm10_10.0.0-4ubuntu1_amd64.deb /tmp/libphobos2-ldc-shared90_1.20.1-1_amd64.deb
+wget -O /tmp/OneDriveGUI-1.0.1_fix82-x86_64.AppImage https://github.com/bpozdena/OneDriveGUI/releases/download/v1.0.1/OneDriveGUI-1.0.1_fix82-x86_64.AppImage
+chmod +x /tmp/OneDriveGUI-1.0.1_fix82-x86_64.AppImage
+tee ~/.local/share/applications/onedrivegui.desktop >/dev/null <<EOL
+[Desktop Entry]
+Name=OneDriveGUI
+Exec=/tmp/OneDriveGUI-1.0.1_fix82-x86_64.AppImage
+Icon=/path/to/icon.png  # Replace with the actual path to the icon
+Type=Application
+Categories=Utility;
+EOL
+chmod +x ~/.local/share/applications/onedrivegui.desktop
+
 # Backup the existing sources.list
 sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup
 
 # Update package list and install necessary packages
-sudo apt update && sudo apt install ngrok nemo code apt-transport-https firefox-esr mesa-utils pv nmap nano dialog autocutsel dbus-x11 dbus neofetch p7zip unzip zip tigervnc-standalone-server tigervnc-xorg-extension novnc python3-websockify -y
+sudo apt update && sudo apt install onedrive ngrok nemo code apt-transport-https firefox-esr mesa-utils pv nmap nano dialog autocutsel dbus-x11 dbus neofetch p7zip unzip zip tigervnc-standalone-server tigervnc-xorg-extension novnc python3-websockify -y
 
 # Set some environment variables
 cd .. || exit 1
