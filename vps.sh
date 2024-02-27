@@ -56,6 +56,7 @@ if pgrep Xvnc >/dev/null; then
     sleep 2
 fi
 sudo rm -rf /tmp/* 2> /dev/null
+sudo sh -c 'echo "\$SecurityTypes = None;" >> /etc/tigervnc/vncserver-config-defaults'
 vncserver :0
 
 # Start websockify for VNC access via web
