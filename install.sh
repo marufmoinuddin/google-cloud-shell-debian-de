@@ -1,163 +1,176 @@
 #!/bin/bash
 
+# Color definitions
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+# Function to print step messages
+print_step() {
+    echo -e "${BLUE}[STEP]${NC} ${GREEN}$1${NC}"
+}
+
+# Function to print warning messages
+print_warning() {
+    echo -e "${YELLOW}[WARNING]${NC} $1"
+}
+
+# Function to print error messages
+print_error() {
+    echo -e "${RED}[ERROR]${NC} $1"
+}
+
 # Print the menu for desktop environment selection
-echo "Select a desktop environment:"
-echo "1. KDE"
+echo -e "${YELLOW}Please select a desktop environment to install:${NC}"
+echo "1. KDE Plasma (default)"
 echo "2. Xfce"
 echo "3. UKUI"
-echo -n "Enter your choice (1/2/3) [default is KDE]: "
-
+echo -e "${YELLOW}You have 10 seconds to make a choice. Press Enter to select the default (1).${NC}"
+echo -e "${YELLOW}Enter your choice (1-3):${NC}"
 # Set timeout for user input (5 seconds)
 read -t 10 choice
 
-# Set the default choice if timeout occurs or invalid input is given
+# Set default choice if timeout occurs or invalid input is given
 if [ -z "$choice" ]; then
     choice="1"
 fi
 
-# Check if the .config directory exists
+print_step "Checking system configuration..."
+# Check if .config directory exists
 config_dir="$HOME/.config"
 if [ ! -d "$config_dir" ]; then
-  echo "The .config directory does not exist. Creating it..."
+  print_warning "The .config directory does not exist. Creating it..."
   mkdir -p "$config_dir"
 fi
 
+
 # Print initial message
-echo "Preparing to install...."
+echo -e "${BLUE}[INFO]${NC} Starting installation..."
+echo -e "${YELLOW}This script will install a desktop environment on your Google Cloud Shell instance.${NC}"
+echo -e "${BLUE}Please note that this may take some time and will require some manual interaction.${NC}"
+echo -e "${YELLOW}Press Ctrl+C to cancel the installation.${NC}"
 
-#Add Debian unstable to sources.list
-#echo "deb https://deb.debian.org/debian/ unstable main contrib non-free" | sudo tee -a /etc/apt/sources.list
-#echo "deb-src https://deb.debian.org/debian/ unstable main contrib non-free" | sudo tee -a /etc/apt/sources.list
 
-# Unzip and move ngrok binary
- curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null && echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | sudo tee /etc/apt/sources.list.d/ngrok.list 
+print_step "Adding repositories..."
 
-# Inform about the following steps
-echo ""
-echo "Cloud Shell already runs on Debian. Just installing the DE (Xfce amd64) and some apps...."
+# Add ngrok repository
+curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null && echo "deb https://ngrok-agent.s3.amazonaws.com jammy main" | sudo tee /etc/apt/sources.list.d/ngrok.list
 
-# Add Microsoft's GPG key and setup Visual Studio Code repository
+# Add Visual Studio Code repository 
 wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
-sudo install -o root -g root -m 644 packages.microsoft.gpg /etc/apt/trusted.gpg.d/
-sudo sh -c 'echo "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/packages.microsoft.gpg] https://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list'
+sudo install -D -o root -g root -m 644 packages.microsoft.gpg /usr/share/keyrings/packages.microsoft.gpg
+sudo sh -c 'echo "deb [arch=amd64,arm64,armhf signed-by=/usr/share/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list'
+rm -f packages.microsoft.gpg
 
-#Onedrive install script
+# Add OneDrive repository
 wget -qO - https://download.opensuse.org/repositories/home:/npreining:/debian-ubuntu-onedrive/xUbuntu_22.04/Release.key | gpg --dearmor | sudo tee /usr/share/keyrings/obs-onedrive.gpg > /dev/null
-echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/obs-onedrive.gpg] https://download.opensuse.org/repositories/home:/npreining:/debian-ubuntu-onedrive/xUbuntu_20.04/ ./" | sudo tee /etc/apt/sources.list.d/onedrive.list
-wget -P /tmp http://archive.ubuntu.com/ubuntu/pool/universe/l/ldc/libphobos2-ldc-shared90_1.20.1-1_amd64.deb
-wget -P /tmp http://archive.ubuntu.com/ubuntu/pool/main/l/llvm-toolchain-10/libllvm10_10.0.0-4ubuntu1_amd64.deb
-sudo apt install /tmp/libllvm10_10.0.0-4ubuntu1_amd64.deb /tmp/libphobos2-ldc-shared90_1.20.1-1_amd64.deb
-wget -O /tmp/OneDriveGUI-1.0.1_fix82-x86_64.AppImage https://github.com/bpozdena/OneDriveGUI/releases/download/v1.0.1/OneDriveGUI-1.0.1_fix82-x86_64.AppImage
-chmod +x /tmp/OneDriveGUI-1.0.1_fix82-x86_64.AppImage
-tee ~/.local/share/applications/onedrivegui.desktop >/dev/null <<EOL
-[Desktop Entry]
-Name=OneDriveGUI
-Exec=/tmp/OneDriveGUI-1.0.1_fix82-x86_64.AppImage
-Icon=/path/to/icon.png  # Replace with the actual path to the icon
-Type=Application
-Categories=Utility;
-EOL
-chmod +x ~/.local/share/applications/onedrivegui.desktop
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/obs-onedrive.gpg] https://download.opensuse.org/repositories/home:/npreining:/debian-ubuntu-onedrive/xUbuntu_22.04/ ./" | sudo tee /etc/apt/sources.list.d/onedrive.list
 
-# Backup the existing sources.list
+# Backup existing sources.list
+print_step "Backing up existing sources.list..."
 sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup
 
+<<<<<<< HEAD
 # Update package list and install necessary packages
 sudo apt update && sudo apt install fonts-lohit-beng-bengali onedrive ngrok nemo code apt-transport-https firefox-esr mesa-utils pv nmap nano dialog autocutsel dbus-x11 dbus neofetch p7zip unzip zip tigervnc-standalone-server tigervnc-xorg-extension novnc python3-websockify -y
+=======
+# Update and install base packages
+print_step "Updating package list and installing base packages..."
+sudo apt update && sudo apt install -y software-properties-common
+sudo add-apt-repository universe
+sudo apt update && sudo apt install -y \
+    fonts-lohit-beng-bengali \
+    onedrive \
+    ngrok \
+    nemo \
+    code \
+    firefox \
+    mesa-utils \
+    pv \
+    nmap \
+    nano \
+    dialog \
+    autocutsel \
+    dbus-x11 \
+    dbus \
+    neofetch \
+    p7zip-full \
+    unzip \
+    zip \
+    tigervnc-standalone-server \
+    tigervnc-xorg-extension \
+    novnc \
+    python3-websockify
+>>>>>>> a140f2f (Enhance install script with color-coded messages and improved user prompts)
 
-# Set some environment variables
-cd .. || exit 1
-export HOME="$(pwd)"
+# Set up environment
 export DISPLAY=":0"
-cd "$HOME" || exit 1
 sudo rm -rf "$HOME/.vnc"
-sudo mkdir "$HOME/.vnc"
-clear
-#echo "-- SET A PASSWORD --"
-#vncpasswd
+sudo mkdir -p "$HOME/.vnc"
 
-# Install the selected desktop environment
+# Install selected desktop environment
 if [ "$choice" = "1" ]; then
     # KDE installation
-    echo "You selected KDE..."
-    sudo apt install ark konsole gwenview kate okular kde-plasma-desktop -y
-    sudo apt remove kdeconnect -y
-    sudo printf '#!/bin/bash\ndbus-launch &> /dev/null\nautocutsel -fork\nstartplasma-x11\n' > "$HOME/.vnc/xstartup"
-    # Restore the backup to HOME
-    # Extract the compressed archive to home directory
-    tar -xzvf "$backup_dir/kde_backup*.tar.gz" -C "$HOME" --keep-old-files
-    echo "Restoration completed successfully!"
+    print_step "Installing KDE Plasma..."
+    sudo apt install -y kde-plasma-desktop ark konsole gwenview kate okular
+    sudo apt remove -y kdeconnect
+    printf '#!/bin/bash\ndbus-launch &> /dev/null\nautocutsel -fork\nstartplasma-x11\n' > "$HOME/.vnc/xstartup"
 
 elif [ "$choice" = "2" ]; then
     # Xfce installation
-    echo "You selected Xfce..."
-    # Install
-    sudo apt install papirus-icon-theme xfce4 xfce4-goodies terminator -y
+    print_step "Installing Xfce..."
+    sudo apt install -y xfce4 xfce4-goodies papirus-icon-theme terminator
     printf '#!/bin/bash\ndbus-launch &> /dev/null\nautocutsel -fork\nxfce4-session\n' > "$HOME/.vnc/xstartup"
-    # Define the backup source directory
     backup_dir="$HOME/google-cloud-shell-debian-de/xfce4_backup"
-    # Restore the backup to .config directory
-    echo "Restoring backup from $backup_dir to $config_dir..."
-    cp -R "$backup_dir"/* "$config_dir"
-    echo "Restoration completed successfully!"
+    cp -R "$backup_dir"/* "$config_dir" || echo "Warning: Could not copy backup files"
+
 elif [ "$choice" = "3" ]; then
     # UKUI installation
-    echo "You selected UKUI..."
-    # Install additional packages from experimental repository
-    sudo apt install ukui* ukwm qt5-ukui-platformtheme kylin-nm -y
-    sudo cp $HOME/.Xauthority /root
-    sudo apt install ukui-settings-daemon ukwm -y
-    # Create or update the VNC startup script using printf
-    printf '#!/bin/bash\nexport GTK_IM_MODULE="fcitx"\nexport QT_IM_MODULE="fcitx"\nexport XMODIFIERS="@im=fcitx"\nunset SESSION_MANAGER\nunset DBUS_SESSION_BUS_ADDRESS\nxrdb $HOME/.xresources\nlightdm &\nexec /usr/bin/ukui-session\n' > "$HOME/.vnc/xstartup"
+    print_step "Installing UKUI..."
+    sudo apt install -y ukui-desktop-environment
+    printf '#!/bin/bash\nexport GTK_IM_MODULE="fcitx"\nexport QT_IM_MODULE="fcitx"\nexport XMODIFIERS="@im=fcitx"\nunset SESSION_MANAGER\nunset DBUS_SESSION_BUS_ADDRESS\nxrdb $HOME/.Xresources\nexec ukui-session\n' > "$HOME/.vnc/xstartup"
 else
-    echo "Invalid choice. Installing KDE by default..."
-    echo "You selected KDE..."
-    sudo apt install ark konsole gwenview kate okular kde-plasma-desktop -y
+    # Default to KDE if invalid choice
+    print_warning "Invalid choice. Defaulting to KDE."
+    sudo apt install -y kde-plasma-desktop ark konsole gwenview kate okular
     printf '#!/bin/bash\ndbus-launch &> /dev/null\nautocutsel -fork\nstartplasma-x11\n' > "$HOME/.vnc/xstartup"
-    # Restore the backup to HOME
-    # Extract the compressed archive to home directory
-    tar -xzvf "$backup_dir/kde_backup*.tar.gz" -C "$HOME" --keep-old-files
-    echo "Restoration completed successfully!"
 fi
-chmod 755 $HOME/.vnc/xstartup
 
-# Preparing VNC's desktop environment execution
-if [ ! -d "$HOME/.config" ]; then
-  sudo mkdir "$HOME/.config"
-fi
+# Set permissions
+print_step "Setting permissions..."
+chmod 755 "$HOME/.vnc/xstartup"
 chmod -R 777 "$HOME/.config"
-cd "$HOME/google-cloud-shell-debian-de" || exit 1
 sudo mv ./vps.sh /usr/bin/vps
 sudo chmod +x /usr/bin/vps
 
-# Setting permissions and cleaning up
-sudo chmod 777 -R "$HOME/.vnc"
-sudo chmod 777 "$HOME/.bashrc"
-sudo apt update -y
-sudo apt autoremove -y
-
-# Check and install Windows-10-Dark-master theme
+# Install Windows 10 theme
+print_step "Installing Windows 10 theme..."
 if [ ! -d /usr/share/themes/Windows-10-Dark-master ]; then
-  cd /usr/share/themes/ || exit 1
-  sudo cp "$HOME/google-cloud-shell-debian-de/app/Windows-10-Dark-master.zip" ./
-  sudo unzip -qq Windows-10-Dark-master.zip
-  sudo rm -f Windows-10-Dark-master.zip
+    cd /usr/share/themes/ || exit 1
+    sudo cp "$HOME/google-cloud-shell-debian-de/app/Windows-10-Dark-master.zip" ./
+    sudo unzip -qq Windows-10-Dark-master.zip
+    sudo rm -f Windows-10-Dark-master.zip
 fi
-cd "$HOME" || exit 1
 
-# Inform about backup and update .bashrc
+# Update bashrc
+print_step "Updating .bashrc..."
+cd "$HOME" || exit 1
 sudo mv "$HOME/.bashrc" "$HOME/.bashrc_old"
-echo "Your $HOME/.bashrc is being modified. Backed up the old .bashrc file as .bashrc_old"
 sudo cp "$HOME/google-cloud-shell-debian-de/bashrc.sh" "$HOME/.bashrc"
 sudo chmod 777 "$HOME/.bashrc"
 
-# Install WPS-Office
-cd /tmp
-wget https://wdl1.pcfg.cache.wpscdn.com/wpsdl/wpsoffice/download/linux/11701/wps-office_11.1.0.11701.XA_amd64.deb
-sudo apt install ./wps-office_11.1.0.11701.XA_amd64.deb -y
+# Install WPS Office
+# wget -O /tmp/wps-office.deb https://wdl1.pcfg.cache.wpscdn.com/wpsdl/wpsoffice/download/linux/11701/wps-office_11.1.0.11701.XA_amd64.deb
+# sudo apt install -y /tmp/wps-office.deb
 
+# Cleanup
+print_step "Cleaning up..."
+sudo apt update -y
+sudo apt autoremove -y
+sudo apt clean
 
-# Installation completed message
-echo "Installation completed!"
-echo "Type vps to start VNC Server!"
+echo -e "${GREEN}Installation completed successfully!${NC}"
+echo -e "${YELLOW}Type 'vps' to start the VNC server.${NC}"
 exit 0
