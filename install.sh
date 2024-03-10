@@ -63,7 +63,7 @@ chmod +x ~/.local/share/applications/onedrivegui.desktop
 sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup
 
 # Update package list and install necessary packages
-sudo apt update && sudo apt install onedrive ngrok nemo code apt-transport-https firefox-esr mesa-utils pv nmap nano dialog autocutsel dbus-x11 dbus neofetch p7zip unzip zip tigervnc-standalone-server tigervnc-xorg-extension novnc python3-websockify -y
+sudo apt update && sudo apt install fonts-lohit-beng-bengali onedrive ngrok nemo code apt-transport-https firefox-esr mesa-utils pv nmap nano dialog autocutsel dbus-x11 dbus neofetch p7zip unzip zip tigervnc-standalone-server tigervnc-xorg-extension novnc python3-websockify -y
 
 # Set some environment variables
 cd .. || exit 1
