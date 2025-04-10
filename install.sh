@@ -29,12 +29,6 @@ echo -e "${BOLD}${BLUE}║  ${YELLOW}Optimized installation script for Cloud env
 echo -e "${BOLD}${BLUE}║                                                        ║${RESET}"
 echo -e "${BOLD}${BLUE}╚════════════════════════════════════════════════════════╝${RESET}\n"
 
-# Initialize progress bar at the bottom
-tput sc
-tput cup $(($(tput lines) - 2))
-printf "${BOLD}Progress: ${GREEN}[${RED}..................................................${RESET}${BOLD}] 0%%${RESET}"
-tput rc
-
 # Print the menu for desktop environment selection
 print_step "Select a desktop environment"
 echo -e "${YELLOW}1. ${GREEN}KDE ${RESET}- A complete, feature-rich desktop"
