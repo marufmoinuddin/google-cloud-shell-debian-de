@@ -1,3 +1,4 @@
+-de/vps.sh
 #!/bin/bash
 
 # Define color variables
@@ -9,22 +10,47 @@ light_cyan='\033[1;96m'
 reset='\033[0m'
 orange='\033[38;5;208m'
 
+# Function to check if commands exist
+command_exists() {
+    command -v "$1" >/dev/null 2>&1
+}
+
+# Function to print error messages and exit
+print_error() {
+    echo -e "${red}[ERROR]${reset} $1"
+}
+
+# Function to print status messages
+print_status() {
+    echo -e "${blue}[STATUS]${reset} $1"
+}
+
 # Redirect error output to /dev/null and set important environment variables
 cd ~ || exit 1
 unset DBUS_LAUNCH
 export HOME="$(pwd)"
 export DISPLAY=":0"
 
+# Check if TigerVNC is installed
+if ! command_exists vncserver; then
+    print_error "TigerVNC is not installed. Please run the install script first."
+    exit 1
+fi
+
+# Check if ngrok is installed
+if ! command_exists ngrok; then
+    print_error "ngrok is not installed. Please run the install script first."
+    exit 1
+fi
+
 # Kill any running ngrok and websockify processes
+print_status "Stopping any running services..."
 sudo killall -q ngrok
 sudo killall -q websockify
+sudo killall -q Xtigervnc
 
-# Stop the xfce4-session if it's running
-if pgrep xfce4-session >/dev/null; then
-    echo "Stopping xfce4-session..."
-    pkill xfce4-session
-    sleep 2
-fi
+# Create VNC directories if they don't exist
+mkdir -p ~/.vnc
 
 # Select the region for ngrok
 while [[ -z $server ]]; do
@@ -39,44 +65,62 @@ while [[ -z $server ]]; do
         5) regions="sa";;
         6) regions="jp";;
         7) regions="in";;
-        [Kk]) exit 0;;
+        8) exit 0;;
         *) unset server;;
     esac
 done
 
 # Read and set ngrok authtoken
 read -p "Now, insert authtoken ngrok: " key
-sudo ngrok authtoken "$key"
+ngrok config add-authtoken "$key"
 
-# Start ngrok and VNC server
-nohup sudo ngrok tcp --region "$regions" 127.0.0.1:5900 &
-if pgrep Xvnc >/dev/null; then
-    echo "Stopping VNC server..."
-    sudo killall Xvnc
-    sleep 2
+# Start ngrok for TCP tunneling
+print_status "Starting ngrok tunnel..."
+nohup ngrok tcp --region "$regions" 5900 > /dev/null 2>&1 &
+
+# Kill any existing VNC server
+print_status "Setting up VNC server..."
+vncserver -kill :0 2>/dev/null || true
+
+# Clean up temporary files
+sudo rm -rf /tmp/.X0* /tmp/.X11* 2>/dev/null || true
+
+# Ensure VNC config directories exist
+sudo mkdir -p /etc/tigervnc
+if [ ! -f "/etc/tigervnc/vncserver-config-defaults" ]; then
+    sudo bash -c 'echo "# TigerVNC configuration
+\$SecurityTypes = \"None, VncAuth, Plain, TLSNone, TLSVnc, TLSPlain\";
+\$localhost = \"no\";
+\$AlwaysShared = \"yes\";" > /etc/tigervnc/vncserver-config-defaults'
 fi
-sudo rm -rf /tmp/* 2> /dev/null
-sudo sh -c 'echo "\$SecurityTypes = None;" >> /etc/tigervnc/vncserver-config-defaults'
-vncserver :0
 
-# Start websockify for VNC access via web
-websockify -D --web=/usr/share/novnc/ --cert="$HOME/novnc.pem" 8080 localhost:5900 2> /dev/null 
+# Start VNC server with proper parameters for Ubuntu 24.04
+print_status "Starting VNC server..."
+vncserver :0 -geometry 1920x1080 -depth 24 -localhost no
+
+# Start websockify for NoVNC
+print_status "Starting NoVNC websockify..."
+websockify -D --web=/usr/share/novnc/ 8080 localhost:5900 2>/dev/null
 
 # Configure TCP keepalive settings
-sudo /sbin/sysctl -w net.ipv4.tcp_keepalive_time=10000 net.ipv4.tcp_keepalive_intvl=5000 net.ipv4.tcp_keepalive_probes=100
+print_status "Optimizing network settings..."
+sudo sysctl -w net.ipv4.tcp_keepalive_time=10000
+sudo sysctl -w net.ipv4.tcp_keepalive_intvl=5000
+sudo sysctl -w net.ipv4.tcp_keepalive_probes=100
 
-# Optionally, add a message after pressing Enter
-echo -e "\n\nPress ${light_cyan}Enter${reset}..."
-sall="$(service  --status-all 2> /dev/null | grep '\-' | awk '{print $4}')"
-while IFS= read -r line; do
-    nohup sudo service "$line" restart &> /dev/null 2> /dev/null &
-done < <(printf '%s\n' "$sall")
+# Pause for user input
+echo -e "\n\nPress ${light_cyan}Enter${reset} to continue..."
+read
 
 # Get the public URL for the ngrok tunnel
-printf "\n\nYour IP Here: "
-curl --silent --show-error http://127.0.0.1:4040/api/tunnels | sed -nE 's/.*public_url":"tcp:..([^"]*).*/\1/p'
+print_status "Retrieving connection information..."
+# Wait a bit to make sure ngrok API is ready
+sleep 5
 
-# Display information for accessing the VNC server
+ngrok_url=$(curl -s http://localhost:4040/api/tunnels | grep -o '"public_url":"[^"]*' | grep -o '[^"]*$' | sed 's|tcp://||')
+
+# Display connection information
+echo -e "\n${green}Your IP Here:${reset} ${light_cyan}$ngrok_url${reset}"
 echo -e "You can also use ${light_cyan}novnc server${reset} in the browser to view your Desktop."
 echo -e "Just press ${light_cyan}Web Preview${reset} (on the top right) and go to port 8080 and then press the vnc.html link."
 echo -e "Or use the IP and put it into your VNC viewer."
@@ -85,26 +129,12 @@ echo -e "Or use the IP and put it into your VNC viewer."
 export PS1='\[\e]0;\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
 printf "\n\n"
 
-# Delay loop for a specified time
-seq 1 9999999999999 | while read -r i; do
-    echo -en "\r Running .     $i s /9999999999999 s"
+# Status indicator loop
+print_status "VNC server running. Press Ctrl+C to exit."
+count=0
+while true; do
+    animation=("⠋" "⠙" "⠹" "⠸" "⠼" "⠴" "⠦" "⠧" "⠇" "⠏")
+    echo -en "\r ${green}${animation[count % 10]}${reset} Running... (Press Ctrl+C to exit)"
     sleep 0.1
-    echo -en "\r Running ..    $i s /9999999999999 s"
-    sleep 0.1
-    echo -en "\r Running ...   $i s /9999999999999 s"
-    sleep 0.1
-    echo -en "\r Running ....  $i s /9999999999999 s"
-    sleep 0.1
-    echo -en "\r Running ..... $i s /9999999999999 s"
-    sleep 0.1
-    echo -en "\r Running     . $i s /9999999999999 s"
-    sleep 0.1
-    echo -en "\r Running  .... $i s /9999999999999 s"
-    sleep 0.1
-    echo -en "\r Running   ... $i s /9999999999999 s"
-    sleep 0.1
-    echo -en "\r Running    .. $i s /9999999999999 s"
-    sleep 0.1
-    echo -en "\r Running     . $i s /9999999999999 s"
-    sleep 0.1
+    ((count++))
 done
