@@ -55,8 +55,9 @@ echo -e "${YELLOW}Press Ctrl+C to cancel the installation.${NC}"
 
 print_step "Adding repositories..."
 
-# Add ngrok repository
-curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null && echo "deb https://ngrok-agent.s3.amazonaws.com noble main" | sudo tee /etc/apt/sources.list.d/ngrok.list
+# Direct ngrok installation if repository doesn't work
+wget -q https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz -O /tmp/ngrok.tgz
+sudo tar -xzf /tmp/ngrok.tgz -C /usr/local/bin
 
 # Add Visual Studio Code repository 
 wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
@@ -79,7 +80,6 @@ sudo add-apt-repository universe
 sudo apt update && sudo apt install -y \
     fonts-lohit-beng-bengali \
     onedrive \
-    ngrok \
     nemo \
     code \
     firefox \
