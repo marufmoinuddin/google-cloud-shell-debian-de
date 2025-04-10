@@ -56,7 +56,7 @@ echo -e "${YELLOW}Press Ctrl+C to cancel the installation.${NC}"
 print_step "Adding repositories..."
 
 # Add ngrok repository
-curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null && echo "deb https://ngrok-agent.s3.amazonaws.com jammy main" | sudo tee /etc/apt/sources.list.d/ngrok.list
+curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null && echo "deb https://ngrok-agent.s3.amazonaws.com noble main" | sudo tee /etc/apt/sources.list.d/ngrok.list
 
 # Add Visual Studio Code repository 
 wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
