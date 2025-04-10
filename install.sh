@@ -65,21 +65,21 @@ sudo install -o root -g root -m 644 packages.microsoft.gpg /etc/apt/trusted.gpg.
 echo "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/packages.microsoft.gpg] https://packages.microsoft.com/repos/vscode stable main" | sudo tee /etc/apt/sources.list.d/vscode.list
 rm -f packages.microsoft.gpg
 
-# Add OneDrive repository and install GUI
-print_step "Setting up OneDrive and GUI"
-wget -qO - https://download.opensuse.org/repositories/home:/npreining:/debian-ubuntu-onedrive/xUbuntu_22.04/Release.key | gpg --dearmor | sudo tee /usr/share/keyrings/obs-onedrive.gpg >/dev/null
-echo "deb [arch=amd64 signed-by=/usr/share/keyrings/obs-onedrive.gpg] https://download.opensuse.org/repositories/home:/npreining:/debian-ubuntu-onedrive/xUbuntu_22.04/ ./" | sudo tee /etc/apt/sources.list.d/onedrive.list
-wget -O /tmp/OneDriveGUI.AppImage https://github.com/bpozdena/OneDriveGUI/releases/download/v1.0.2/OneDriveGUI-1.0.2-x86_64.AppImage
-chmod +x /tmp/OneDriveGUI.AppImage
-mkdir -p ~/.local/share/applications
-cat <<EOL > ~/.local/share/applications/onedrivegui.desktop
-[Desktop Entry]
-Name=OneDriveGUI
-Exec=/tmp/OneDriveGUI.AppImage
-Type=Application
-Categories=Utility;
-EOL
-chmod +x ~/.local/share/applications/onedrivegui.desktop
+# # Add OneDrive repository and install GUI
+# print_step "Setting up OneDrive and GUI"
+# wget -qO - https://download.opensuse.org/repositories/home:/npreining:/debian-ubuntu-onedrive/xUbuntu_22.04/Release.key | gpg --dearmor | sudo tee /usr/share/keyrings/obs-onedrive.gpg >/dev/null
+# echo "deb [arch=amd64 signed-by=/usr/share/keyrings/obs-onedrive.gpg] https://download.opensuse.org/repositories/home:/npreining:/debian-ubuntu-onedrive/xUbuntu_22.04/ ./" | sudo tee /etc/apt/sources.list.d/onedrive.list
+# wget -O /tmp/OneDriveGUI.AppImage https://github.com/bpozdena/OneDriveGUI/releases/download/v1.0.2/OneDriveGUI-1.0.2-x86_64.AppImage
+# chmod +x /tmp/OneDriveGUI.AppImage
+# mkdir -p ~/.local/share/applications
+# cat <<EOL > ~/.local/share/applications/onedrivegui.desktop
+# [Desktop Entry]
+# Name=OneDriveGUI
+# Exec=/tmp/OneDriveGUI.AppImage
+# Type=Application
+# Categories=Utility;
+# EOL
+# chmod +x ~/.local/share/applications/onedrivegui.desktop
 
 # Update package list and install base packages
 print_step "Updating package list and installing base packages"
