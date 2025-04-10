@@ -72,10 +72,6 @@ echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/obs-o
 print_step "Backing up existing sources.list..."
 sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup
 
-<<<<<<< HEAD
-# Update package list and install necessary packages
-sudo apt update && sudo apt install fonts-lohit-beng-bengali onedrive ngrok nemo code apt-transport-https firefox-esr mesa-utils pv nmap nano dialog autocutsel dbus-x11 dbus neofetch p7zip unzip zip tigervnc-standalone-server tigervnc-xorg-extension novnc python3-websockify -y
-=======
 # Update and install base packages
 print_step "Updating package list and installing base packages..."
 sudo apt update && sudo apt install -y software-properties-common
@@ -103,7 +99,6 @@ sudo apt update && sudo apt install -y \
     tigervnc-xorg-extension \
     novnc \
     python3-websockify
->>>>>>> a140f2f (Enhance install script with color-coded messages and improved user prompts)
 
 # Set up environment
 export DISPLAY=":0"
