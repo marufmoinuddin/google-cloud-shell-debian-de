@@ -155,6 +155,15 @@ fi
 print_step "Setting permissions and cleaning up"
 sudo chmod 777 -R "$HOME/.vnc"
 sudo chmod 777 "$HOME/.bashrc"
+
+# Make the VPS script executable and move it to the proper location
+if [ -f "$HOME/google-cloud-shell-debian-de/vps.sh" ]; then
+  sudo mv ./vps.sh /usr/bin/vps
+  sudo chmod +x /usr/bin/vps
+else
+  echo -e "${YELLOW}VPS script not found. You'll need to set it up manually.${RESET}"
+fi
+
 sudo apt update -y
 sudo apt autoremove -y
 
