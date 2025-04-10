@@ -1,10 +1,11 @@
 #!/bin/bash
 
-# Color codes
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-BLUE='\033[0;34m'
+# Color definitions
+RED='\033[1;31m'
+GREEN='\033[1;32m'
 YELLOW='\033[1;33m'
+BLUE='\033[1;34m'
+CYAN='\033[1;36m'
 NC='\033[0m' # No Color
 
 # Progress bar variables
@@ -17,68 +18,61 @@ show_progress() {
     local percent=$((CURRENT_STEP * 100 / TOTAL_STEPS))
     local completed=$((width * CURRENT_STEP / TOTAL_STEPS))
     local remaining=$((width - completed))
-    printf "\r${YELLOW}Progress: ["
+    printf "\r${CYAN}Progress: ["
     printf "%${completed}s" | tr ' ' '#'
     printf "%${remaining}s" | tr ' ' '-'
     printf "] %d%%${NC}" "$percent"
+    tput cup "$(tput lines)" 0 # Move cursor to bottom
 }
 
 # Function to print step with color
 print_step() {
     ((CURRENT_STEP++))
-    echo -e "${BLUE}Step ${CURRENT_STEP}/${TOTAL_STEPS}: $1${NC}"
+    echo -e "${GREEN}Step $CURRENT_STEP/$TOTAL_STEPS: $1${NC}"
     show_progress
-    echo ""
 }
 
-# Trap to ensure progress bar stays at bottom
-trap 'echo -ne "\033[?25h"; tput cup $(tput lines) 0' EXIT
+# Trap to ensure progress bar stays at bottom on exit
+trap 'tput cnorm; echo' EXIT
 
-# Hide cursor
-echo -ne "\033[?25l"
+# Hide cursor for cleaner output
+tput civis
 
-print_step "Initializing setup"
-# Create .config directory if it doesn't exist
-config_dir="$HOME/.config"
-[ ! -d "$config_dir" ] && mkdir -p "$config_dir"
-
-# Desktop environment selection with default timeout
-print_step "Selecting desktop environment"
+# Print the menu for desktop environment selection
+print_step "Selecting Desktop Environment"
+echo -e "${YELLOW}Select a desktop environment:${NC}"
 echo "1. KDE Plasma"
 echo "2. Xfce"
 echo "3. UKUI"
-echo -n "Enter your choice (1/2/3) [default KDE, 10s timeout]: "
+echo -n "Enter your choice (1/2/3) [default is KDE]: "
 read -t 10 choice
-choice=${choice:-1}
+choice=${choice:-1} # Default to KDE if no input
 
-print_step "Updating package sources"
-# Backup sources.list
-sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup
+# Ensure .config directory exists
+print_step "Checking and creating .config directory"
+config_dir="$HOME/.config"
+[ ! -d "$config_dir" ] && mkdir -p "$config_dir"
 
-# Add repositories (optimized for Ubuntu 24.04)
-sudo apt-get update -qq
-sudo apt-get install -y software-properties-common
-sudo add-apt-repository -y ppa:ngrok/ngrok
-sudo curl -s https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/microsoft.gpg >/dev/null
-echo "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main" | sudo tee /etc/apt/sources.list.d/vscode.list
+# Add ngrok repository
+print_step "Adding ngrok repository"
+curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null
+echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | sudo tee /etc/apt/sources.list.d/ngrok.list
 
-print_step "Installing base packages"
-sudo apt-get update -qq
-sudo apt-get install -y \
-    fonts-lohit-beng-bengali ngrok nemo code firefox-esr mesa-utils \
-    pv nmap nano dialog autocutsel dbus-x11 neofetch p7zip-full unzip zip \
-    tigervnc-standalone-server novnc python3-websockify
+# Add Visual Studio Code repository
+print_step "Adding Visual Studio Code repository"
+wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
+sudo install -o root -g root -m 644 packages.microsoft.gpg /etc/apt/trusted.gpg.d/
+echo "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/packages.microsoft.gpg] https://packages.microsoft.com/repos/vscode stable main" | sudo tee /etc/apt/sources.list.d/vscode.list
+rm -f packages.microsoft.gpg
 
-print_step "Setting up OneDrive"
-# OneDrive setup optimized for Ubuntu 24.04
-wget -qO - https://download.opensuse.org/repositories/home:/npreining:/debian-ubuntu-onedrive/xUbuntu_24.04/Release.key | gpg --dearmor | sudo tee /usr/share/keyrings/obs-onedrive.gpg >/dev/null
-echo "deb [arch=amd64 signed-by=/usr/share/keyrings/obs-onedrive.gpg] https://download.opensuse.org/repositories/home:/npreining:/debian-ubuntu-onedrive/xUbuntu_24.04/ ./" | sudo tee /etc/apt/sources.list.d/onedrive.list
-sudo apt-get update -qq
-sudo apt-get install -y onedrive
+# Add OneDrive repository and install GUI
+print_step "Setting up OneDrive and GUI"
+wget -qO - https://download.opensuse.org/repositories/home:/npreining:/debian-ubuntu-onedrive/xUbuntu_22.04/Release.key | gpg --dearmor | sudo tee /usr/share/keyrings/obs-onedrive.gpg >/dev/null
+echo "deb [arch=amd64 signed-by=/usr/share/keyrings/obs-onedrive.gpg] https://download.opensuse.org/repositories/home:/npreining:/debian-ubuntu-onedrive/xUbuntu_22.04/ ./" | sudo tee /etc/apt/sources.list.d/onedrive.list
 wget -O /tmp/OneDriveGUI.AppImage https://github.com/bpozdena/OneDriveGUI/releases/download/v1.0.2/OneDriveGUI-1.0.2-x86_64.AppImage
 chmod +x /tmp/OneDriveGUI.AppImage
 mkdir -p ~/.local/share/applications
-cat > ~/.local/share/applications/onedrivegui.desktop << EOL
+cat <<EOL > ~/.local/share/applications/onedrivegui.desktop
 [Desktop Entry]
 Name=OneDriveGUI
 Exec=/tmp/OneDriveGUI.AppImage
@@ -87,92 +81,70 @@ Categories=Utility;
 EOL
 chmod +x ~/.local/share/applications/onedrivegui.desktop
 
-print_step "Installing desktop environment"
-# VNC setup
+# Update package list and install base packages
+print_step "Updating package list and installing base packages"
+sudo apt update -y
+sudo apt install -y fonts-lohit-beng-bengali onedrive ngrok nemo code firefox-esr mesa-utils pv nmap nano dialog autocutsel dbus-x11 neofetch p7zip-full unzip zip tigervnc-standalone-server novnc python3-websockify
+
+# Configure VNC environment
+print_step "Configuring VNC environment"
+export HOME="$(pwd)"
+export DISPLAY=":0"
 mkdir -p "$HOME/.vnc"
+chmod 755 "$HOME/.vnc"
+
+# Install selected desktop environment
+print_step "Installing selected desktop environment"
 case "$choice" in
     1)
-        echo -e "${GREEN}Installing KDE Plasma${NC}"
-        sudo apt-get install -y kde-plasma-desktop ark konsole gwenview kate okular
-        cat > "$HOME/.vnc/xstartup" << EOL
-#!/bin/bash
-dbus-launch &>/dev/null
-autocutsel -fork
-startplasma-x11
-EOL
+        echo -e "${BLUE}Installing KDE Plasma...${NC}"
+        sudo apt install -y kde-plasma-desktop ark konsole gwenview kate okular
+        echo -e '#!/bin/bash\ndbus-launch &> /dev/null\nautocutsel -fork\nstartplasma-x11' > "$HOME/.vnc/xstartup"
         ;;
     2)
-        echo -e "${GREEN}Installing Xfce${NC}"
-        sudo apt-get install -y xfce4 xfce4-goodies papirus-icon-theme terminator
-        cat > "$HOME/.vnc/xstartup" << EOL
-#!/bin/bash
-dbus-launch &>/dev/null
-autocutsel -fork
-xfce4-session
-EOL
+        echo -e "${BLUE}Installing Xfce...${NC}"
+        sudo apt install -y xfce4 xfce4-goodies papirus-icon-theme terminator
+        echo -e '#!/bin/bash\ndbus-launch &> /dev/null\nautocutsel -fork\nxfce4-session' > "$HOME/.vnc/xstartup"
         ;;
     3)
-        echo -e "${GREEN}Installing UKUI${NC}"
-        sudo add-apt-repository -y ppa:ubuntukylin-members/ukui
-        sudo apt-get update -qq
-        sudo apt-get install -y ukui-desktop-environment
-        cat > "$HOME/.vnc/xstartup" << EOL
-#!/bin/bash
-export GTK_IM_MODULE="fcitx"
-export QT_IM_MODULE="fcitx"
-export XMODIFIERS="@im=fcitx"
-unset SESSION_MANAGER
-unset DBUS_SESSION_BUS_ADDRESS
-exec ukui-session
-EOL
+        echo -e "${BLUE}Installing UKUI...${NC}"
+        sudo apt install -y ukui-settings-daemon ukui-desktop-environment ukwm qt5-ukui-platformtheme kylin-nm
+        echo -e '#!/bin/bash\nexport GTK_IM_MODULE="fcitx"\nexport QT_IM_MODULE="fcitx"\nexport XMODIFIERS="@im=fcitx"\nlightdm &\nexec /usr/bin/ukui-session' > "$HOME/.vnc/xstartup"
         ;;
     *)
-        echo -e "${YELLOW}Invalid choice, defaulting to KDE${NC}"
-        sudo apt-get install -y kde-plasma-desktop ark konsole gwenview kate okular
-        cat > "$HOME/.vnc/xstartup" << EOL
-#!/bin/bash
-dbus-launch &>/dev/null
-autocutsel -fork
-startplasma-x11
-EOL
+        echo -e "${RED}Invalid choice, defaulting to KDE Plasma...${NC}"
+        sudo apt install -y kde-plasma-desktop ark konsole gwenview kate okular
+        echo -e '#!/bin/bash\ndbus-launch &> /dev/null\nautocutsel -fork\nstartplasma-x11' > "$HOME/.vnc/xstartup"
         ;;
 esac
 chmod +x "$HOME/.vnc/xstartup"
 
-print_step "Configuring VNC"
-chmod -R 777 "$HOME/.vnc"
-export HOME="$(pwd)"
-export DISPLAY=":0"
-
-print_step "Installing Windows 10 Dark theme"
-if [ ! -d /usr/share/themes/Windows-10-Dark ]; then
-    wget -q https://github.com/B00merang-Project/Windows-10-Dark/releases/download/v2.2/Windows-10-Dark.tar.xz
-    sudo tar -xf Windows-10-Dark.tar.xz -C /usr/share/themes/
-    rm Windows-10-Dark.tar.xz
+# Install Windows-10-Dark theme
+print_step "Installing Windows-10-Dark theme"
+if [ ! -d /usr/share/themes/Windows-10-Dark-master ]; then
+    cd /tmp
+    wget -q https://github.com/B00merang-Project/Windows-10-Dark/releases/download/v2.3/Windows-10-Dark-master.zip
+    sudo unzip -q Windows-10-Dark-master.zip -d /usr/share/themes/
+    rm -f Windows-10-Dark-master.zip
 fi
 
+# Install WPS Office
 print_step "Installing WPS Office"
-wget -q https://wdl1.pcfg.cache.wpscdn.com/wpsdl/wpsoffice/download/linux/11719/wps-office_11.1.0.11719.XA_amd64.deb
-sudo dpkg -i wps-office_11.1.0.11719.XA_amd64.deb
-sudo apt-get install -f -y
-rm wps-office_11.1.0.11719.XA_amd64.deb
+cd /tmp
+wget -q https://wdl1.pcfg.cache.wpscdn.com/wpsdl/wpsoffice/download/linux/11723/wps-office_11.1.0.11723.XA_amd64.deb
+sudo apt install -y ./wps-office_11.1.0.11723.XA_amd64.deb
+rm -f wps-office_11.1.0.11723.XA_amd64.deb
 
-print_step "Configuring shell"
-[ -f "$HOME/.bashrc" ] && mv "$HOME/.bashrc" "$HOME/.bashrc_old"
-echo "neofetch" > "$HOME/.bashrc"
-chmod 777 "$HOME/.bashrc"
+# Final cleanup and permissions
+print_step "Finalizing installation"
+sudo chmod -R 777 "$HOME/.vnc" "$HOME/.config"
+sudo apt autoremove -y
 
-print_step "Cleaning up"
-sudo apt-get autoremove -y -qq
-sudo apt-get autoclean -y -qq
+# Completion message
+print_step "Installation completed"
+echo -e "${GREEN}Installation completed successfully!${NC}"
+echo -e "${YELLOW}Type 'vps' to start the VNC server.${NC}"
 
-print_step "Installation complete"
-echo -e "${GREEN}Setup completed successfully!${NC}"
-echo "Type 'vncserver' to start the VNC server"
-
-# Show final progress and restore cursor
-CURRENT_STEP=$TOTAL_STEPS
-show_progress
-echo -e "\n"
-echo -ne "\033[?25h"
+# Restore cursor visibility
+tput cnorm
 exit 0
