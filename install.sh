@@ -94,13 +94,22 @@ sudo apt update && sudo apt install -y \
     neofetch \
     p7zip-full \
     unzip \
-    zip \
-    tigervnc-standalone-server \
-    tigervnc-xorg-extension \
-    novnc \
-    python3-websockify
+    zip
 
-# Set up environment
+# Replace the TigerVNC installation section:
+
+print_step "Installing VNC server components..."
+sudo apt update && sudo apt install -y tigervnc-standalone-server tigervnc-common novnc python3-websockify
+
+# Ensure TigerVNC configuration directory exists
+print_step "Configuring VNC server..."
+sudo mkdir -p /etc/tigervnc
+sudo bash -c 'echo "# TigerVNC configuration
+\$SecurityTypes = \"None, VncAuth, Plain, TLSNone, TLSVnc, TLSPlain\";
+\$localhost = \"no\";
+\$AlwaysShared = \"yes\";" > /etc/tigervnc/vncserver-config-defaults'
+
+# Set up VNC environment
 export DISPLAY=":0"
 sudo rm -rf "$HOME/.vnc"
 sudo mkdir -p "$HOME/.vnc"
