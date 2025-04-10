@@ -14,24 +14,10 @@ BOLD='\033[1m'
 TOTAL_STEPS=10
 current_step=0
 
-# Function to update and display progress bar
-update_progress() {
-  current_step=$((current_step + 1))
-  percentage=$((current_step * 100 / TOTAL_STEPS))
-  completed=$((percentage / 2))
-  remaining=$((50 - completed))
-  
-  # Save cursor position, move to bottom of screen, print progress bar, restore cursor position
-  tput sc
-  tput cup $(($(tput lines) - 2))
-  printf "${BOLD}Progress: ${GREEN}[%-${completed}s${RED}%-${remaining}s${RESET}${BOLD}] ${percentage}%%${RESET}" "$(printf "%0.s#" $(seq 1 $completed))" "$(printf "%0.s." $(seq 1 $remaining))"
-  tput rc
-}
-
 # Function to print step headers
 print_step() {
   echo -e "\n${MAGENTA}===== ${CYAN}$1${MAGENTA} =====${RESET}"
-  update_progress
+  
 }
 
 # Clear screen and show welcome message
@@ -209,7 +195,7 @@ echo -e "${GREEN}WPS Office installed successfully!${RESET}"
 
 # Final step - update progress to 100%
 current_step=$TOTAL_STEPS
-update_progress
+
 
 # Installation completed message
 echo -e "\n${BOLD}${GREEN}╔════════════════════════════════════════════════╗${RESET}"
