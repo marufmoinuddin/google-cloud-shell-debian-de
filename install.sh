@@ -1,164 +1,37 @@
 #!/bin/bash
 
 # Define color variables
-BLACK='\033[0;30m'
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[0;33m'
-BLUE='\033[0;34m'
-MAGENTA='\033[0;35m'
-CYAN='\033[0;36m'
-WHITE='\033[0;37m'
-BOLD='\033[1m'
+RED='\033[1;31m'
+GREEN='\033[1;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[1;34m'
+CYAN='\033[1;96m'
+MAGENTA='\033[1;35m'
 RESET='\033[0m'
+BOLD='\033[1m'
 
-# Box drawing characters
-HORIZ='═'
-VERT='║'
-TOP_LEFT='╭'
-TOP_RIGHT='╮'
-BOTTOM_LEFT='╰'
-BOTTOM_RIGHT='╯'
+# Progress bar variables
+TOTAL_STEPS=10
+current_step=0
 
-# Terminal width
-TERM_WIDTH=$(tput cols)
-
-# Function to center text
-center_text() {
-    local text="$1"
-    local width="$2"
-    local padding=$(( (width - ${#text}) / 2 ))
-    printf "%${padding}s%s%${padding}s\n" "" "$text" ""
+# Function to update and display progress bar
+update_progress() {
+  current_step=$((current_step + 1))
+  percentage=$((current_step * 100 / TOTAL_STEPS))
+  completed=$((percentage / 2))
+  remaining=$((50 - completed))
+  
+  # Save cursor position, move to bottom of screen, print progress bar, restore cursor position
+  tput sc
+  tput cup $(($(tput lines) - 2))
+  printf "${BOLD}Progress: ${GREEN}[%-${completed}s${RED}%-${remaining}s${RESET}${BOLD}] ${percentage}%%${RESET}" "$(printf "%0.s#" $(seq 1 $completed))" "$(printf "%0.s." $(seq 1 $remaining))"
+  tput rc
 }
 
-# Function to create a box with a title
-create_box() {
-    local title="$1"
-    local width=$(( TERM_WIDTH - 4 ))
-    
-    # Top border with title
-    echo -e "${BOLD}${CYAN}${TOP_LEFT}${HORIZ}${HORIZ} ${MAGENTA}${title} ${CYAN}${HORIZ}$(printf '%*s' $((width - ${#title} - 5)) | tr ' ' "${HORIZ}")${TOP_RIGHT}${RESET}"
-    
-    # Return so content can be added
-}
-
-# Function to close a box
-close_box() {
-    local width=$(( TERM_WIDTH - 4 ))
-    echo -e "${BOLD}${CYAN}${BOTTOM_LEFT}$(printf '%*s' $width | tr ' ' "${HORIZ}")${BOTTOM_RIGHT}${RESET}"
-}
-
-# Function to display a spinner
-spinner() {
-    local pid=$1
-    local delay=0.1
-    local spinstr='|/-\'
-    while [ "$(ps a | awk '{print $1}' | grep $pid)" ]; do
-        local temp=${spinstr#?}
-        printf " [%c]  " "$spinstr"
-        local spinstr=$temp${spinstr%"$temp"}
-        sleep $delay
-        printf "\b\b\b\b\b\b"
-    done
-    printf "    \b\b\b\b"
-}
-
-# Function to display download progress bar
-display_download_progress() {
-    local package="$1"
-    local size="$2"
-    local width=$(( TERM_WIDTH - 40 ))
-    
-    echo -e "${BOLD}${CYAN}${TOP_LEFT}${HORIZ} Downloading ${package} ${HORIZ}${HORIZ}${HORIZ}${TOP_RIGHT}${RESET}"
-    echo -e "${BOLD}${CYAN}${VERT}${RESET} Total Size: ${YELLOW}${size}${RESET}${CYAN}$(printf '%*s' $((width - ${#size} - 14)) '')${VERT}${RESET}"
-    echo -e "${BOLD}${CYAN}${VERT}${RESET} ${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}${CYAN}${VERT}${RESET}"
-    echo -e "${BOLD}${CYAN}${BOTTOM_LEFT}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${BOTTOM_RIGHT}${RESET}"
-}
-
-# Function to create a summary table
-create_summary_table() {
-    local title="$1"
-    shift
-    local items=("$@")
-    local width=$(( TERM_WIDTH - 4 ))
-    
-    # Create a summary box like Nala's
-    echo -e "${BOLD}${CYAN}${TOP_LEFT}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${TOP_RIGHT}${RESET}"
-    echo -e "${BOLD}${CYAN}${VERT} ${MAGENTA}${title}$(printf '%*s' $((width - ${#title} - 1)) '')${CYAN}${VERT}${RESET}"
-    echo -e "${BOLD}${CYAN}${VERT}$(printf '%*s' $width '')${VERT}${RESET}"
-    
-    # Display the items
-    for item in "${items[@]}"; do
-        echo -e "${BOLD}${CYAN}${VERT} ${GREEN}• ${WHITE}${item}$(printf '%*s' $((width - ${#item} - 4)) '')${CYAN}${VERT}${RESET}"
-    done
-    
-    echo -e "${BOLD}${CYAN}${VERT}$(printf '%*s' $width '')${VERT}${RESET}"
-    echo -e "${BOLD}${CYAN}${BOTTOM_LEFT}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${HORIZ}${BOTTOM_RIGHT}${RESET}"
-}
-
-# Function to display installation items
-display_install_items() {
-    local title="$1"
-    shift
-    local items=("$@")
-    local width=$(( TERM_WIDTH - 4 ))
-    
-    # Create header like Nala's
-    echo -e "${BOLD}${CYAN}${TOP_LEFT}$(printf '%*s' $width | tr ' ' "${HORIZ}")${TOP_RIGHT}${RESET}"
-    echo -e "${BOLD}${CYAN}${VERT} ${MAGENTA}${title}$(printf '%*s' $((width - ${#title} - 1)) '')${CYAN}${VERT}${RESET}"
-    echo -e "${BOLD}${CYAN}${VERT}$(printf '%*s' $width '')${VERT}${RESET}"
-    
-    # Headers
-    echo -e "${BOLD}${CYAN}${VERT}  ${WHITE}Package:$(printf '%50s' '')Version:$(printf '%40s' '')Size:  ${CYAN}${VERT}${RESET}"
-    
-    # Display the items
-    for item in "${items[@]}"; do
-        # Parse package, version, and size from the item
-        package=$(echo "$item" | cut -d ':' -f 1)
-        version=$(echo "$item" | cut -d ':' -f 2)
-        size=$(echo "$item" | cut -d ':' -f 3)
-        
-        echo -e "${BOLD}${CYAN}${VERT}  ${GREEN}${package}$(printf '%*s' $((50 - ${#package})) '')${YELLOW}${version}$(printf '%*s' $((40 - ${#version})) '')${CYAN}${size}  ${CYAN}${VERT}${RESET}"
-    done
-    
-    echo -e "${BOLD}${CYAN}${VERT}$(printf '%*s' $width '')${VERT}${RESET}"
-    echo -e "${BOLD}${CYAN}${BOTTOM_LEFT}$(printf '%*s' $width | tr ' ' "${HORIZ}")${BOTTOM_RIGHT}${RESET}"
-}
-
-# Function to create selection menu
-create_menu() {
-    local title="$1"
-    shift
-    local options=("$@")
-    local width=$(( TERM_WIDTH - 4 ))
-    
-    create_box "$title"
-    
-    # Display the options
-    for i in "${!options[@]}"; do
-        echo -e "${BOLD}${CYAN}${VERT} ${YELLOW}$((i+1)). ${GREEN}${options[$i]}${RESET}$(printf '%*s' $((width - ${#options[$i]} - 5)) '')${BOLD}${CYAN}${VERT}${RESET}"
-    done
-    
-    # Bottom of the menu
-    echo -e "${BOLD}${CYAN}${VERT}$(printf '%*s' $width '')${VERT}${RESET}"
-    close_box
-    
-    echo -e "${CYAN}Enter your choice (1-${#options[@]}) [default is 1]: ${RESET}"
-}
-
-# Function to display progress bar (similar to Nala's)
-display_progress() {
-    local message="$1"
-    local current="$2"
-    local total="$3"
-    local width=$(( TERM_WIDTH - 40 ))
-    local completed=$(( width * current / total ))
-    local remaining=$(( width - completed ))
-    
-    echo -ne "\r${BOLD}${CYAN}${VERT} ${message} ${GREEN}"
-    printf '%*s' "$completed" | tr ' ' '━'
-    printf '%*s' "$remaining" | tr ' ' '╺'
-    echo -ne " ${WHITE}${current}/${total} ${CYAN}${VERT}${RESET}"
+# Function to print step headers
+print_step() {
+  echo -e "\n${MAGENTA}===== ${CYAN}$1${MAGENTA} =====${RESET}"
+  update_progress
 }
 
 # Clear screen and show welcome message
@@ -170,75 +43,173 @@ echo -e "${BOLD}${BLUE}║  ${YELLOW}Optimized installation script for Cloud env
 echo -e "${BOLD}${BLUE}║                                                        ║${RESET}"
 echo -e "${BOLD}${BLUE}╚════════════════════════════════════════════════════════╝${RESET}\n"
 
-# Display desktop environment options
-create_menu "Select a desktop environment" "KDE - A complete, feature-rich desktop" "Xfce - Lightweight and efficient desktop" "UKUI - Modern and intuitive desktop"
+# Initialize progress bar at the bottom
+tput sc
+tput cup $(($(tput lines) - 2))
+printf "${BOLD}Progress: ${GREEN}[${RED}..................................................${RESET}${BOLD}] 0%%${RESET}"
+tput rc
 
-# Read user choice with timeout
+# Print the menu for desktop environment selection
+print_step "Select a desktop environment"
+echo -e "${YELLOW}1. ${GREEN}KDE ${RESET}- A complete, feature-rich desktop"
+echo -e "${YELLOW}2. ${GREEN}Xfce ${RESET}- Lightweight and efficient desktop"
+echo -e "${YELLOW}3. ${GREEN}UKUI ${RESET}- Modern and intuitive desktop"
+echo -e "${CYAN}Enter your choice (1/2/3) [default is KDE]: ${RESET}"
+
+# Set timeout for user input (10 seconds)
 read -t 10 choice
 
-# Set default choice
+# Set the default choice if timeout occurs or invalid input is given
 if [ -z "$choice" ]; then
     choice="1"
     echo -e "${YELLOW}No input received. Defaulting to KDE.${RESET}"
 fi
 
-# Create a summary table of what will be installed
-echo
-create_summary_table "Installation Summary" "Desktop Environment: $([ "$choice" = "1" ] && echo "KDE" || [ "$choice" = "2" ] && echo "Xfce" || echo "UKUI")" "Additional Software: VSCode, Firefox, WPS Office, Ngrok" "Total disk space required: ~800 MB"
-
-# Ask for confirmation
-echo -e "\n${CYAN}Do you want to continue? [Y/n] ${RESET}"
-read -t 10 confirm
-if [ "$confirm" = "n" ] || [ "$confirm" = "N" ]; then
-    echo -e "${RED}Installation aborted.${RESET}"
-    exit 1
+# Check if the .config directory exists
+config_dir="$HOME/.config"
+if [ ! -d "$config_dir" ]; then
+  echo -e "${YELLOW}The .config directory does not exist. Creating it...${RESET}"
+  mkdir -p "$config_dir"
 fi
 
-echo
+print_step "Setting up system repositories"
+echo -e "${GREEN}Setting up Ngrok repository...${RESET}"
+curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null 
+echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | sudo tee /etc/apt/sources.list.d/ngrok.list
 
-# Begin installation with progress tracking
-create_box "Installation Progress"
+echo -e "${GREEN}Setting up Visual Studio Code repository...${RESET}"
+wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
+sudo install -o root -g root -m 644 packages.microsoft.gpg /etc/apt/trusted.gpg.d/
+sudo sh -c 'echo "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/packages.microsoft.gpg] https://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list'
 
-# List of installation steps
-steps=("Setting up system repositories" "Updating package lists" "Installing common packages" "Setting up environment" "Installing selected desktop environment" "Setting up VNC configuration" "Setting permissions and cleaning up" "Installing system theme" "Configuring bash environment" "Installing additional software")
-total_steps=${#steps[@]}
+# Backup the existing sources.list
+sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup
 
-# Simulate installation process with progress updates
-for i in $(seq 0 $(( total_steps - 1 ))); do
-    # Display current step
-    echo -e "${BOLD}${CYAN}${VERT} ${MAGENTA}${steps[$i]}${RESET}$(printf '%*s' $((TERM_WIDTH - ${#steps[$i]} - 6)) '')${BOLD}${CYAN}${VERT}${RESET}"
+print_step "Updating package lists"
+sudo apt update
+
+print_step "Installing common packages"
+sudo apt install -y fonts-lohit-beng-bengali ngrok nemo code apt-transport-https \
+    firefox mesa-utils pv nmap nano dialog autocutsel dbus-x11 dbus neofetch \
+    p7zip unzip zip tigervnc-standalone-server tigervnc-xorg-extension novnc python3-websockify
+
+# Set some environment variables
+print_step "Setting up environment"
+cd .. || exit 1
+export HOME="$(pwd)"
+export DISPLAY=":0"
+cd "$HOME" || exit 1
+sudo rm -rf "$HOME/.vnc"
+sudo mkdir -p "$HOME/.vnc"
+
+# Install the selected desktop environment
+print_step "Installing selected desktop environment"
+if [ "$choice" = "1" ]; then
+    # KDE installation
+    echo -e "${GREEN}Installing KDE Plasma Desktop...${RESET}"
+    sudo apt install -y ark konsole gwenview kate okular kde-plasma-desktop
+    sudo apt remove -y kdeconnect
+    sudo printf '#!/bin/bash\ndbus-launch &> /dev/null\nautocutsel -fork\nstartplasma-x11\n' > "$HOME/.vnc/xstartup"
+    echo -e "${GREEN}KDE installation completed!${RESET}"
+
+elif [ "$choice" = "2" ]; then
+    # Xfce installation
+    echo -e "${GREEN}Installing Xfce Desktop...${RESET}"
+    sudo apt install -y papirus-icon-theme xfce4 xfce4-goodies terminator
+    printf '#!/bin/bash\ndbus-launch &> /dev/null\nautocutsel -fork\nxfce4-session\n' > "$HOME/.vnc/xstartup"
+    echo -e "${GREEN}Xfce installation completed!${RESET}"
     
-    # Display progress bar
-    display_progress "Progress:" $(( i + 1 )) $total_steps
-    echo
-    
-    # Simulate some work for each step (replace with actual commands)
-    case $i in
-        0)
-            echo -e "${BOLD}${CYAN}${VERT} ${GREEN}Setting up Ngrok repository...${RESET}$(printf '%*s' $((TERM_WIDTH - 30)) '')${BOLD}${CYAN}${VERT}${RESET}"
-            sleep 1
-            echo -e "${BOLD}${CYAN}${VERT} ${GREEN}Setting up Visual Studio Code repository...${RESET}$(printf '%*s' $((TERM_WIDTH - 42)) '')${BOLD}${CYAN}${VERT}${RESET}"
-            sleep 1
-            ;;
-        1)
-            echo -e "${BOLD}${CYAN}${VERT} ${GREEN}Updating package lists...${RESET}$(printf '%*s' $((TERM_WIDTH - 26)) '')${BOLD}${CYAN}${VERT}${RESET}"
-            display_download_progress "package information" "10.5 MB"
-            sleep 1
-            ;;
-        2)
-            # Show installation items
-            local_items=("firefox:2.24.7-1.2ubuntu7.3:211 KB" "ngrok:1:3.27-3.1build1:31 KB" "nemo:2.3.12-1ubuntu0.24.04.1:158 KB")
-            display_install_items "Installing common packages" "${local_items[@]}"
-            sleep 2
-            ;;
-        *)
-            # Simulate some work
-            sleep 1
-            ;;
-    esac
-done
+elif [ "$choice" = "3" ]; then
+    # UKUI installation
+    echo -e "${GREEN}Installing UKUI Desktop...${RESET}"
+    sudo apt install -y ukui-desktop-environment
+    sudo cp $HOME/.Xauthority /root
+    # Create or update the VNC startup script
+    printf '#!/bin/bash\nexport GTK_IM_MODULE="fcitx"\nexport QT_IM_MODULE="fcitx"\nexport XMODIFIERS="@im=fcitx"\nunset SESSION_MANAGER\nunset DBUS_SESSION_BUS_ADDRESS\nxrdb $HOME/.xresources\nlightdm &\nexec /usr/bin/ukui-session\n' > "$HOME/.vnc/xstartup"
+    echo -e "${GREEN}UKUI installation completed!${RESET}"
+else
+    echo -e "${YELLOW}Invalid choice. Installing KDE by default...${RESET}"
+    sudo apt install -y ark konsole gwenview kate okular kde-plasma-desktop
+    printf '#!/bin/bash\ndbus-launch &> /dev/null\nautocutsel -fork\nstartplasma-x11\n' > "$HOME/.vnc/xstartup"
+    echo -e "${GREEN}KDE installation completed!${RESET}"
+fi
 
-close_box
+chmod 755 $HOME/.vnc/xstartup
+
+# Preparing VNC's desktop environment execution
+print_step "Setting up VNC configuration"
+if [ ! -d "$HOME/.config" ]; then
+  sudo mkdir "$HOME/.config"
+fi
+chmod -R 777 "$HOME/.config"
+
+# Make the VPS script executable and move it to the proper location
+if [ -f "$HOME/google-cloud-shell-debian-de/vps.sh" ]; then
+  sudo mv ./vps.sh /usr/bin/vps
+  sudo chmod +x /usr/bin/vps
+else
+  echo -e "${YELLOW}VPS script not found. You'll need to set it up manually.${RESET}"
+fi
+
+# Setting permissions and cleaning up
+print_step "Setting permissions and cleaning up"
+sudo chmod 777 -R "$HOME/.vnc"
+sudo chmod 777 "$HOME/.bashrc"
+
+# Make the VPS script executable and move it to the proper location
+if [ -f "$HOME/google-cloud-shell-debian-de/vps.sh" ]; then
+  sudo mv ./vps.sh /usr/bin/vps
+  sudo chmod +x /usr/bin/vps
+else
+  echo -e "${YELLOW}VPS script not found. You'll need to set it up manually.${RESET}"
+fi
+
+sudo apt update -y
+sudo apt autoremove -y
+
+# Check and install Windows-10-Dark-master theme
+print_step "Installing system theme"
+if [ -f "$HOME/google-cloud-shell-debian-de/app/Windows-10-Dark-master.zip" ]; then
+  if [ ! -d /usr/share/themes/Windows-10-Dark-master ]; then
+    cd /usr/share/themes/ || exit 1
+    sudo cp "$HOME/google-cloud-shell-debian-de/app/Windows-10-Dark-master.zip" ./
+    sudo unzip -qq Windows-10-Dark-master.zip
+    sudo rm -f Windows-10-Dark-master.zip
+    echo -e "${GREEN}Windows 10 Dark theme installed successfully!${RESET}"
+  else
+    echo -e "${YELLOW}Theme already installed, skipping...${RESET}"
+  fi
+else
+  echo -e "${YELLOW}Theme file not found, skipping...${RESET}"
+fi
+cd "$HOME" || exit 1
+
+# Backup and update .bashrc
+print_step "Configuring bash environment"
+if [ -f "$HOME/.bashrc" ]; then
+  sudo mv "$HOME/.bashrc" "$HOME/.bashrc_old"
+  echo -e "${YELLOW}Your $HOME/.bashrc is being modified. Backed up the old .bashrc file as .bashrc_old${RESET}"
+fi
+
+if [ -f "$HOME/google-cloud-shell-debian-de/bashrc.sh" ]; then
+  sudo cp "$HOME/google-cloud-shell-debian-de/bashrc.sh" "$HOME/.bashrc"
+  sudo chmod 777 "$HOME/.bashrc"
+  echo -e "${GREEN}New .bashrc configuration installed!${RESET}"
+else
+  echo -e "${YELLOW}Bashrc template not found, keeping default configuration...${RESET}"
+fi
+
+# Install WPS-Office
+print_step "Installing additional software"
+echo -e "${GREEN}Installing WPS Office...${RESET}"
+cd /tmp
+wget -q https://wdl1.pcfg.cache.wpscdn.com/wpsdl/wpsoffice/download/linux/11701/wps-office_11.1.0.11701.XA_amd64.deb
+sudo apt install -y ./wps-office_11.1.0.11701.XA_amd64.deb
+echo -e "${GREEN}WPS Office installed successfully!${RESET}"
+
+# Final step - update progress to 100%
+current_step=$TOTAL_STEPS
+update_progress
 
 # Installation completed message
 echo -e "\n${BOLD}${GREEN}╔════════════════════════════════════════════════╗${RESET}"
@@ -246,5 +217,10 @@ echo -e "${BOLD}${GREEN}║            Installation completed!             ║${
 echo -e "${BOLD}${GREEN}║                                                ║${RESET}"
 echo -e "${BOLD}${GREEN}║  ${YELLOW}Type ${CYAN}vps${YELLOW} to start the VNC Server!${GREEN}          ║${RESET}"
 echo -e "${BOLD}${GREEN}╚════════════════════════════════════════════════╝${RESET}\n"
+
+# Clear the progress bar
+tput cup $(($(tput lines) - 2))
+printf "                                                                  "
+tput cup $(($(tput lines) - 1))
 
 exit 0
