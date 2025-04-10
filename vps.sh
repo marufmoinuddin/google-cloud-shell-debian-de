@@ -15,26 +15,6 @@ BOLD='\033[1m'
 TOTAL_STEPS=6
 current_step=0
 
-# Function to update and display progress bar
-update_progress() {
-  current_step=$((current_step + 1))
-  percentage=$((current_step * 100 / TOTAL_STEPS))
-  completed=$((percentage / 2))
-  remaining=$((50 - completed))
-  
-  # Save cursor position, move to bottom of screen, print progress bar, restore cursor position
-  tput sc
-  tput cup $(($(tput lines) - 2))
-  printf "${BOLD}Progress: ${GREEN}[%-${completed}s${RED}%-${remaining}s${RESET}${BOLD}] ${percentage}%%${RESET}" "$(printf "%0.s#" $(seq 1 $completed))" "$(printf "%0.s." $(seq 1 $remaining))"
-  tput rc
-}
-
-# Function to print step headers
-print_step() {
-  echo -e "\n${MAGENTA}===== ${CYAN}$1${MAGENTA} =====${RESET}"
-  update_progress
-}
-
 # Clear the screen and show header
 clear
 echo -e "${BOLD}${BLUE}╔════════════════════════════════════════════════════════╗${RESET}"
@@ -44,11 +24,9 @@ echo -e "${BOLD}${BLUE}║  ${YELLOW}Access your desktop environment remotely${B
 echo -e "${BOLD}${BLUE}║                                                        ║${RESET}"
 echo -e "${BOLD}${BLUE}╚════════════════════════════════════════════════════════╝${RESET}\n"
 
-# Initialize progress bar at the bottom
-tput sc
-tput cup $(($(tput lines) - 2))
-printf "${BOLD}Progress: ${GREEN}[${RED}..................................................${RESET}${BOLD}] 0%%${RESET}"
-tput rc
+print_step() {
+    echo -e "\n${MAGENTA}===== ${CYAN}$1${MAGENTA} =====${RESET}"
+}
 
 # Redirect error output to /dev/null and set important environment variables
 cd ~ || exit 1
@@ -171,7 +149,6 @@ echo -e "Or use the IP address above with your VNC viewer."
 
 # Final step - update progress to 100%
 current_step=$TOTAL_STEPS
-update_progress
 
 # Set the prompt with the default format
 export PS1='\[\e]0;\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
