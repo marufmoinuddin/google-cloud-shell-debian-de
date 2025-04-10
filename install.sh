@@ -125,7 +125,7 @@ chmod -R 777 "$HOME/.config"
 
 # Make the VPS script executable and move it to the proper location
 if [ -f "$HOME/google-cloud-shell-debian-de/vps.sh" ]; then
-  sudo mv ./vps.sh /usr/bin/vps
+  sudo mv $HOME/google-cloud-shell-debian-de/vps.sh /usr/bin/vps
   sudo chmod +x /usr/bin/vps
 else
   echo -e "${YELLOW}VPS script not found. You'll need to set it up manually.${RESET}"
