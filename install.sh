@@ -182,12 +182,16 @@ echo -e "${GREEN}WPS Office installed successfully!${RESET}"
 current_step=$TOTAL_STEPS
 
 
-# Installation completed message
-echo -e "\n${BOLD}${GREEN}╔════════════════════════════════════════════════╗${RESET}"
-echo -e "${BOLD}${GREEN}║            Installation completed!             ║${RESET}"
-echo -e "${BOLD}${GREEN}║                                                ║${RESET}"
-echo -e "${BOLD}${GREEN}║  ${YELLOW}Type ${CYAN}vps${YELLOW} to start the VNC Server!${GREEN}          ║${RESET}"
-echo -e "${BOLD}${GREEN}╚════════════════════════════════════════════════╝${RESET}\n"
+# Installation completed message with proper centering and alignment
+echo 
+echo -e "${PAD_STR}${BOLD}${GREEN}╔══════════════════════════════════════════════════╗${RESET}"
+echo -e "${PAD_STR}${BOLD}${GREEN}║                                                  ║${RESET}"
+echo -e "${PAD_STR}${BOLD}${GREEN}║           Installation completed!                ║${RESET}"
+echo -e "${PAD_STR}${BOLD}${GREEN}║                                                  ║${RESET}"
+echo -e "${PAD_STR}${BOLD}${GREEN}║      ${YELLOW}Type ${CYAN}vps${YELLOW} to start the VNC Server!${GREEN}         ║${RESET}"
+echo -e "${PAD_STR}${BOLD}${GREEN}║                                                  ║${RESET}"
+echo -e "${PAD_STR}${BOLD}${GREEN}╚══════════════════════════════════════════════════╝${RESET}"
+echo
 
 # Clear the progress bar
 tput cup $(($(tput lines) - 2))
