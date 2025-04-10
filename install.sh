@@ -188,7 +188,7 @@ echo -e "${PAD_STR}${BOLD}${GREEN}╔══════════════�
 echo -e "${PAD_STR}${BOLD}${GREEN}║                                                  ║${RESET}"
 echo -e "${PAD_STR}${BOLD}${GREEN}║           Installation completed!                ║${RESET}"
 echo -e "${PAD_STR}${BOLD}${GREEN}║                                                  ║${RESET}"
-echo -e "${PAD_STR}${BOLD}${GREEN}║      ${YELLOW}Type ${CYAN}vps${YELLOW} to start the VNC Server!${GREEN}         ║${RESET}"
+echo -e "${PAD_STR}${BOLD}${GREEN}║      ${YELLOW}Type ${CYAN}vps${YELLOW} to start the VNC Server!${GREEN}           ║${RESET}"
 echo -e "${PAD_STR}${BOLD}${GREEN}║                                                  ║${RESET}"
 echo -e "${PAD_STR}${BOLD}${GREEN}╚══════════════════════════════════════════════════╝${RESET}"
 echo
