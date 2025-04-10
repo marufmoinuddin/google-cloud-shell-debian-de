@@ -1,4 +1,3 @@
--de/vps.sh
 #!/bin/bash
 
 # Define color variables
@@ -85,18 +84,25 @@ vncserver -kill :0 2>/dev/null || true
 # Clean up temporary files
 sudo rm -rf /tmp/.X0* /tmp/.X11* 2>/dev/null || true
 
+# Create VNC password file (more secure)
+print_status "Setting up VNC password..."
+mkdir -p ~/.vnc
+echo "vnc123" | vncpasswd -f > ~/.vnc/passwd
+chmod 600 ~/.vnc/passwd
+
 # Ensure VNC config directories exist
 sudo mkdir -p /etc/tigervnc
 if [ ! -f "/etc/tigervnc/vncserver-config-defaults" ]; then
     sudo bash -c 'echo "# TigerVNC configuration
-\$SecurityTypes = \"None, VncAuth, Plain, TLSNone, TLSVnc, TLSPlain\";
+\$SecurityTypes = \"VncAuth,TLSVnc\";
 \$localhost = \"no\";
 \$AlwaysShared = \"yes\";" > /etc/tigervnc/vncserver-config-defaults'
 fi
 
-# Start VNC server with proper parameters for Ubuntu 24.04
+# Start VNC server with proper security parameters for Ubuntu 24.04
 print_status "Starting VNC server..."
-vncserver :0 -geometry 1920x1080 -depth 24 -localhost no
+# Use either password authentication or the --I-KNOW-THIS-IS-INSECURE flag
+vncserver :0 -geometry 1920x1080 -depth 24 -localhost no -SecurityTypes VncAuth -PasswordFile ~/.vnc/passwd || vncserver :0 -geometry 1920x1080 -depth 24 -localhost no --I-KNOW-THIS-IS-INSECURE
 
 # Start websockify for NoVNC
 print_status "Starting NoVNC websockify..."
@@ -121,6 +127,7 @@ ngrok_url=$(curl -s http://localhost:4040/api/tunnels | grep -o '"public_url":"[
 
 # Display connection information
 echo -e "\n${green}Your IP Here:${reset} ${light_cyan}$ngrok_url${reset}"
+echo -e "${yellow}VNC Password:${reset} ${light_cyan}vnc123${reset}"
 echo -e "You can also use ${light_cyan}novnc server${reset} in the browser to view your Desktop."
 echo -e "Just press ${light_cyan}Web Preview${reset} (on the top right) and go to port 8080 and then press the vnc.html link."
 echo -e "Or use the IP and put it into your VNC viewer."
